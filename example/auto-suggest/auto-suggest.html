@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../dist/jquery.modulecreator.js"></script>
+	<script src="autoSuggest.js"></script>
+	<script>
+		$(function() {
+			$('.select').autoSuggest()
+			$('.select2').autoSuggest({
+				hooks: {
+					customHook: function (a, b) {
+						console.log(this)
+						console.log(a, b)
+					}
+				},
+				options: {
+					value: 'Illum!',
+					editable: false,
+					filtred: false,
+				}
+			})
+			// $('.select2').autoSuggest('open')
+		})
+	</script>
+</head>
+<body>
+	<main>
+		<section>
+			<h3>Auto Suggest</h3>
+			<div class="select">
+				<span>Lorem.</span>
+				<span>Laborum.</span>
+				<span>Deserunt.</span>
+				<span>Sunt?</span>
+				<span>Aliquid?</span>
+				<span>Totam.</span>
+				<span>Aliquid.</span>
+				<span>Cupiditate.</span>
+				<span>Quaerat.</span>
+			</div>
+			<div class="select2">
+				<span>Assumenda?</span>
+				<span>Inventore!</span>
+				<span>Minima.</span>
+				<span>Corrupti.</span>
+				<span>Nulla.</span>
+				<span>Illum!</span>
+				<span>Quod.</span>
+				<span>Sunt!</span>
+				<span>Ea.</span>
+			</div>
+
+			<style>
+				.js-suggest {
+					display: inline-block;
+					vertical-align: top;
+					position: relative;
+				}
+				.js-suggest-input {
+					display: block;
+					padding: 0 5px;
+					border: 1px solid #ccc;
+					width: 175px;
+					height: 30px;
+					line-height: 30px;
+				}
+				.js-suggest-input:focus {
+					outline: none;
+				}
+				.js-suggest.opened .js-suggest-input {
+					border: 1px solid #58f;
+				}
+				.js-suggest-list {
+					position: absolute;
+					display: none;
+					top: 100%;
+					left: 0;
+					width: 100%;
+					max-height: 240px;
+					overflow: auto;
+					background: #fff;
+				}
+				.js-suggest-item {
+					display: block;
+					cursor: pointer;
+				}
+				.js-suggest-item:hover {
+					background: #eee;
+				}
+				.js-suggest-item.active {
+					background: #ccc;
+				}
+				.js-suggest-item span {
+					padding: 5px;
+					display: block;
+				}
+				.js-suggest-item input:checked + span {
+					background: #ccc
+				}
+			</style>
+		</section>
+	</main>
+</body>
+</html>

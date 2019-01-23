@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="/lib/jquery.min.js"></script>
+	<script src="/lib/jquery.modulecreator.js"></script>
+	<script src="/example/clear.js"></script>
+	<script>
+		$(function() {
+			$('.example').moduleName({
+				exampleOption: true
+			})
+			$('.example').moduleName('examplePublicMethod')
+			$.moduleName()
+		})
+	</script>
+</head>
+<body>
+	<div class="example">// check in console</div>
+</body>
+</html>
