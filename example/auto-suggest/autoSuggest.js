@@ -1,4 +1,4 @@
-CreateModule({
+$.CreateModule({
 	name: 'AutoSuggest',
 	data: {},
 	options: {

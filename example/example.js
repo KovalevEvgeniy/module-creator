@@ -6,7 +6,7 @@
 * @author Kovalev Evgeniy
 **/
 
-CreateModule({
+$.CreateModule({
 	name: 'ModuleName',
 	data: {},
 	options: {
@@ -30,7 +30,7 @@ CreateModule({
 			if (this.options.exampleOption) {
 				console.log('base initing')
 			}
-			$(el).trigger('create', {})
+			$(this.element).trigger('create', {})
 		},
 		_onClick: function (e) {
 			// this - инст модуля
@@ -47,7 +47,6 @@ CreateModule({
 		examplePublicMethod: function (e) {
 			// this.inst - инст модуля
 			// this.private - доступ к приватным методам из публичной области
-			console.log('public code')
 			this.private._examplePrivateMethod()
 		}
 	}

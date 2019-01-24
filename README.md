@@ -5,7 +5,7 @@
 
 ### Create module
 ``` js
-CreateModule({
+$.CreateModule({
 	name: 'Name',
 	data: {},
 	options: {},
@@ -15,17 +15,17 @@ CreateModule({
 			this._create()
 		},
 		bindEvent: function () {
-			$(el).on(getEventName('click', this.hash), this._onClick)
+			$(this.element).on(this.getEventName('click'), this._onClick)
 		},
 		afterCreate: function () {}
 	},
 	privateMethods: {
 		_create: function () {},
 		_onClick: function (e) {},
-		_examplePrivateMethod: function (e) {}
+		_examplePrivateMethod: function () {}
 	},
 	publicMethods: {
-		examplePublicMethod: function (e) {
+		examplePublicMethod: function (arg1, arg2) {
 			this.private._examplePrivateMethod()
 		}
 	}
@@ -47,10 +47,39 @@ $(function () {
 ``` js
 $.name('examplePublicMethod', [arguments])
 ```
-
+### Custom hook
+``` js
+hooks: {
+	beforeCreate: function () {},
+	create: function () {},
+	bindEvent: function () {},
+	afterCreate: function () {},
+	myHook: function (arg1, arg2) {
+		// code
+	}
+},
+```
+or
+``` js
+$(function () {
+	$.name({
+		hooks: {
+			myHook: function (arg1, arg2) {
+				// code
+			}
+		}
+	})
+})
+```
+and coll in private methods
+``` js
+this.hooks('myHook', [arguments])
+```
 ### Patch Notes
 #### v 1.1 
-Add global storage
-
+Added global storage for all instances
+``` js
+this.storage // object
+```
 #### v 1.0
 Release
