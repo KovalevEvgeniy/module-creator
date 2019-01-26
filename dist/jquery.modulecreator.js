@@ -48,7 +48,8 @@
 					'mousedown' : 'touchstart',
 					'mouseup' : 'touchend'
 				};
-				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? events[eventName] + namespace : eventName + namespace);
+
+				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (events[eventName] || eventName) + namespace : eventName + namespace);
 			};
 
 			inst.hooks('beforeCreate');
