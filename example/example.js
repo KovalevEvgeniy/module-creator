@@ -53,3 +53,10 @@ $(function () {
 	});
 });
 
+$(function() {
+	$('.example').moduleName({
+		exampleOption: true
+	})
+	$('.example').moduleName('examplePublicMethod')
+	$.moduleName()
+})

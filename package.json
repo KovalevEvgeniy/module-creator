@@ -1,0 +1,14 @@
+{
+  "name": "ModuleCreator",
+  "version": "1.1.0",
+  "description": "Module generator by created JQuery widgets",
+  "author": "KovalevEvgeniy",
+  "license": "MIT & BSD",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rm": "^2.0.0",
+    "gulp-uglify": "^3.0.1"
+  }
+}

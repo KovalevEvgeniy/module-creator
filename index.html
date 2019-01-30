@@ -4,18 +4,9 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	
-	<script src="./lib/jquery.min.js"></script>
-	<script src="./dist/jquery.modulecreator.min.js"></script>
-	<script src="./example/example.js"></script>
-	<script>
-		$(function() {
-			$('.example').moduleName({
-				exampleOption: true
-			})
-			$('.example').moduleName('examplePublicMethod')
-			$.moduleName()
-		})
-	</script>
+	<script src="./lib/jquery.min.js" defer></script>
+	<script src="./dist/jquery.modulecreator.min.js" defer></script>
+	<script src="./example/example.js" defer></script>
 </head>
 <body>
 	<div class="example">// check in console</div>
