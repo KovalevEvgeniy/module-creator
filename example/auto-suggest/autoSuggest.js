@@ -1,3 +1,11 @@
+/**
+* @ModuleCreator version 1.1.0
+* @module AutoSuggest
+* @plugin autoSuggest
+* @example $.autoSuggest(object)
+* @author Kovalev Evgeniy
+**/
+
 $(function () {
 	$.CreateModule({
 		name: 'AutoSuggest',
@@ -34,7 +42,6 @@ $(function () {
 				this.hooks('customHook', 'arg1', 'arg2')
 			},
 			_create: function () {
-				console.log(this);
 				var inst = this
 				var element = inst.element
 				var items = element.find('span')
@@ -74,7 +81,6 @@ $(function () {
 				var inst = this
 				e.stopPropagation()
 				inst._openList()
-				console.log(1);
 			},
 			_createList: function (items) {
 				var inst = this

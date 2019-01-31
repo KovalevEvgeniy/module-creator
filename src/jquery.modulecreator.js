@@ -15,7 +15,7 @@
 				}
 			});
 			options = options || {};
-			inst.data = $.extend({}, (props.data || {}), options.data || {});
+			inst.data = $.extend({}, (props.data || {}), (options.data || {}));
 			inst.list = list;
 			inst.element = $(el);
 
@@ -29,7 +29,7 @@
 			el = inst.element.get(0);
 			inst.hash = Math.round(new Date() * Math.random());
 			el.hash = inst.hash;
-			inst.options = $.extend({}, props.options, options.options, {hash: inst.hash});
+			inst.options = $.extend({}, (props.options || {}), (options.options || {}), {hash: inst.hash});
 			var hooks = $.extend({}, props.hooks, options.hooks);
 			inst.hooks = function (name) {
 				if (hooks[name]) {

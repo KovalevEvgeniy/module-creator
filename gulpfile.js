@@ -4,22 +4,22 @@ var concat = require("gulp-concat");
 var minify = require('gulp-uglify');
 var rm = require( 'gulp-rm' )
 
-gulp.task('minify', function () {
+gulp.task('default', function () {
 	gulp.src('src/jquery.modulecreator.js')
-	.pipe(minify())
-	.pipe(gulp.dest('dist'));
-});
+		.pipe(minify())
+		.pipe(gulp.dest('tmp'));
 
-gulp.task('concat', function () {
 	gulp.src([
-		'src/description.js',
-		'dist/jquery.modulecreator.js'
-	])
-	.pipe(concat('jquery.modulecreator.min.js'))
-	.pipe(gulp.dest('dist'));
+			'src/description.js',
+			'tmp/jquery.modulecreator.js'
+		])
+		.pipe(concat('jquery.modulecreator.min.js'))
+		.pipe(gulp.dest('dist'));
 
-	gulp.src('dist/jquery.modulecreator.js')
-	.pipe(rm());
+	gulp.src([
+			'src/description.js',
+			'src/jquery.modulecreator.js'
+		])
+		.pipe(concat('jquery.modulecreator.js'))
+		.pipe(gulp.dest('dist'));
 });
-
-gulp.task('default', ['minify', 'concat']);
