@@ -36,7 +36,7 @@
 					hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
 				}
 			};
-			inst.getEventName = getEventName = function (eventName, namespace) {
+			inst.getEventName = function (eventName, namespace) {
 				namespace = (namespace ? '.' + namespace : '') + '.' + inst.hash;
 
 				var events = {
