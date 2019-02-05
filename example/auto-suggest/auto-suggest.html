@@ -5,18 +5,15 @@
 	<title>Document</title>
 	
 	<script src="../../lib/jquery.min.js"></script>
-	<script src="../../src/jquery.modulecreator.js"></script>
-	<!-- <script src="../../dist/jquery.modulecreator.min.js"></script> -->
+	<!-- <script src="../../src/jquery.modulecreator.js"></script> -->
+	<script src="../../dist/jquery.modulecreator.min.js"></script>
 	<script src="autoSuggest.js"></script>
 	<script>
 		$(function() {
 			$('.select').autoSuggest()
 			$('.select2').autoSuggest({
 				hooks: {
-					customHook: function (a, b) {
-						console.log(this)
-						console.log(a, b)
-					}
+					customHook: function (a, b) {}
 				},
 				options: {
 					value: 'Illum!',

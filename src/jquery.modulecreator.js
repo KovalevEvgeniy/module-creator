@@ -8,8 +8,18 @@
 		class Module {
 			constructor(el, options = {}) {
 				const inst = this;
-				Object.defineProperty(inst, "storage", { get: () => storage });
-				Object.defineProperty(inst, "list", { get: () => list });
+				Object.defineProperty(inst, "storage", {
+					get: () => storage,
+					set (val) {
+						throw ('Setting the value to "' + val + '" failed. Object "storage" is not editable');
+					}
+				});
+				Object.defineProperty(inst, "list", {
+					get: () => list,
+					set (val) {
+						throw ('Setting the value to "' + val + '" failed. Object "list" is not editable');
+					}
+				});
 
 				inst.element = $(el);
 
@@ -22,15 +32,29 @@
 
 				el = inst.element.get(0);
 				inst.hash = el.hash = Math.round(new Date() * Math.random());
-				inst.data = Object.assign({}, (props.data || {}), (options.data || {}));
-				inst.options = Object.assign({}, (props.options || {}), (options.options || {}), {hash: inst.hash});
 
-				let hooks = Object.assign({}, props.hooks, options.hooks);
-				inst.hooks = function (name) {
-					if (hooks[name]) {
-						hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
-					}
-				};
+				Object.defineProperty(inst, "data", {
+					get: () => Object.assign({}, (props.data || {}), (options.data || {}))
+				});
+				Object.defineProperty(inst, "options", {
+					get: () => Object.assign({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
+				});
+
+				const hooks = Object.assign({}, props.hooks, options.hooks);
+				Object.defineProperty(inst, "hooks", {
+					get: () => (function (name) {
+						if (hooks[name]) {
+							hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
+						}
+					})
+				});
+				Object.defineProperty(inst, "super", {
+					get: () => (function (name) {
+						if (this.__proto__[name]) {
+							return this.__proto__[name].apply(this, Array.prototype.slice.call(arguments, 1));
+						}
+					})
+				});
 
 				inst.hooks('beforeCreate');
 
@@ -79,7 +103,7 @@
 
 			_getEventName (eventName, namespace) {
 				namespace = (namespace ? '.' + namespace : '') + '.' + this.hash;
-				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (_getEventList()[eventName] || eventName) + namespace : eventName + namespace);
+				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (this._getEventList()[eventName] || eventName) + namespace : eventName + namespace);
 			}
 
 			_destroy () {
@@ -97,21 +121,21 @@
 				selector = $[lib].element || $('<div>');
 				$[lib].element = selector;
 			}
-			let opt = arguments[0],
-				args = Array.prototype.slice.call(arguments, 1),
-				l = selector.length,
-				ret = selector;
 
-			for (let i = 0; i < l; i++) {
-				if (typeof opt == 'object' || typeof opt == 'undefined') {
-					let inst = new Module(selector[i], opt);
+			let options = arguments[0];
+			let args = Array.prototype.slice.call(arguments, 1);
+			let result = selector;
+
+			for (let i = 0; i < selector.length; i++) {
+				if (typeof options == 'object' || typeof options == 'undefined') {
+					let inst = new Module(selector[i], options);
 					inst.list[inst.hash] = inst;
 				} else {
-					ret = (selector[i][lib][opt].apply(selector[i][lib], args) || selector);
+					result = (selector[i][lib][options].apply(selector[i][lib], args) || selector);
 				}
 			}
 
-			return ret;
+			return result;
 		});
 	}
 })(jQuery);

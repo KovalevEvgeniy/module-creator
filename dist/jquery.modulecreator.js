@@ -1,11 +1,15 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.1 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.2.0 | MIT & BSD
  */
 "use strict";
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 ;
 
@@ -17,100 +21,142 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var list = {};
     var storage = {};
 
-    var Module = function Module(el) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var Module =
+    /*#__PURE__*/
+    function () {
+      function Module(el) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      _classCallCheck(this, Module);
+        _classCallCheck(this, Module);
 
-      var inst = this;
-      Object.defineProperty(inst, "storage", {
-        get: function get() {
-          return storage;
-        }
-      });
-      inst.data = $.extend({}, props.data || {}, options.data || {});
-      inst.list = list;
-      inst.element = $(el);
-
-      if (inst.element.length > 1) {
-        inst.element.each(function (index, el) {
-          new window[name](el, options);
+        var inst = this;
+        Object.defineProperty(inst, "storage", {
+          get: function get() {
+            return storage;
+          },
+          set: function set(val) {
+            throw 'Setting the value to "' + val + '" failed. Object "storage" is not editable';
+          }
         });
-        return;
-      }
-
-      el = inst.element.get(0);
-      inst.hash = Math.round(new Date() * Math.random());
-      el.hash = inst.hash;
-      inst.options = $.extend({}, props.options || {}, options.options || {}, {
-        hash: inst.hash
-      });
-      var hooks = $.extend({}, props.hooks, options.hooks);
-
-      inst.hooks = function (name) {
-        if (hooks[name]) {
-          hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
-        }
-      };
-
-      inst.getEventName = function (eventName, namespace) {
-        namespace = (namespace ? '.' + namespace : '') + '.' + inst.hash;
-        var events = {
-          'click': 'touchstart',
-          'mousedown': 'touchstart',
-          'mouseup': 'touchend'
-        };
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (events[eventName] || eventName) + namespace : eventName + namespace;
-      };
-
-      inst._destroy = function () {
-        delete inst.list[inst.hash];
-        delete el.hash;
-        delete el[lib];
-      };
-
-      inst.hooks('beforeCreate'); // private methods
-
-      var privateMethods = {};
-
-      if (props.privateMethods) {
-        for (var key in props.privateMethods) {
-          if (key[0] !== '_') {
-            throw 'The name of the private method must begin with "_". Rename the method ' + key;
+        Object.defineProperty(inst, "list", {
+          get: function get() {
+            return list;
+          },
+          set: function set(val) {
+            throw 'Setting the value to "' + val + '" failed. Object "list" is not editable';
           }
+        });
+        inst.element = $(el);
 
-          inst[key] = props.privateMethods[key].bind(inst);
-          privateMethods[key] = props.privateMethods[key].bind(inst);
-        }
-      }
-
-      el[lib] = {
-        data: inst.data,
-        destroy: function destroy() {
-          inst._destroy();
-        }
-      }; // private methods
-
-      if (props.publicMethods) {
-        for (var _key in props.publicMethods) {
-          el[lib][_key] = props.publicMethods[_key].bind({
-            inst: el[lib],
-            private: privateMethods
+        if (inst.element.length > 1) {
+          inst.element.each(function (index, el) {
+            new $[name](el, options);
           });
+          return;
+        }
 
-          if (inst[_key]) {
-            throw 'The ' + _key + ' method is already defined in a private scope!';
+        el = inst.element.get(0);
+        inst.hash = el.hash = Math.round(new Date() * Math.random());
+        Object.defineProperty(inst, "data", {
+          get: function get() {
+            return Object.assign({}, props.data || {}, options.data || {});
+          }
+        });
+        Object.defineProperty(inst, "options", {
+          get: function get() {
+            return Object.assign({}, props.options || {}, options.options || {}, {
+              hash: inst.hash
+            });
+          }
+        });
+        var hooks = Object.assign({}, props.hooks, options.hooks);
+        Object.defineProperty(inst, "hooks", {
+          get: function get() {
+            return function (name) {
+              if (hooks[name]) {
+                hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
+              }
+            };
+          }
+        });
+        Object.defineProperty(inst, "super", {
+          get: function get() {
+            return function (name) {
+              if (this.__proto__[name]) {
+                return this.__proto__[name].apply(this, Array.prototype.slice.call(arguments, 1));
+              }
+            };
+          }
+        });
+        inst.hooks('beforeCreate');
+        var privateMethods = {};
+
+        if (props.privateMethods) {
+          for (var key in props.privateMethods) {
+            if (key[0] !== '_') {
+              throw 'The name of the private method must begin with "_". Rename the method ' + key;
+            }
+
+            inst[key] = privateMethods[key] = props.privateMethods[key].bind(inst);
           }
         }
+
+        el[lib] = {
+          data: inst.data,
+          destroy: function destroy() {
+            inst._destroy();
+          }
+        };
+
+        if (props.publicMethods) {
+          for (var _key in props.publicMethods) {
+            el[lib][_key] = props.publicMethods[_key].bind({
+              inst: el[lib],
+              private: privateMethods
+            });
+
+            if (inst[_key]) {
+              throw 'The ' + _key + ' method is already defined in a private scope!';
+            }
+
+            if (_key[0] === '_') {
+              throw 'The public method should not start with "_". Rename the method ' + _key;
+            }
+          }
+        }
+
+        inst.hooks('create');
+        inst.hooks('bindEvent');
+        inst.hooks('afterCreate');
       }
 
-      inst.hooks('create');
-      inst.hooks('bindEvent');
-      inst.hooks('afterCreate');
-    } // sayName() {
-    // 	console.log(`Person ${this.name} said his name`);
-    // }
-    ;
+      _createClass(Module, [{
+        key: "_getEventList",
+        value: function _getEventList() {
+          return {
+            'click': 'touchstart',
+            'mousedown': 'touchstart',
+            'mouseup': 'touchend'
+          };
+        }
+      }, {
+        key: "_getEventName",
+        value: function _getEventName(eventName, namespace) {
+          namespace = (namespace ? '.' + namespace : '') + '.' + this.hash;
+          return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (this._getEventList()[eventName] || eventName) + namespace : eventName + namespace;
+        }
+      }, {
+        key: "_destroy",
+        value: function _destroy() {
+          var el = this.element.get(0);
+          delete this.list[this.hash];
+          delete el.hash;
+          delete el[lib];
+        }
+      }]);
+
+      return Module;
+    }();
 
     $[lib] = $[lib] || ($.fn[lib] = function () {
       var selector = this;
@@ -120,21 +166,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         $[lib].element = selector;
       }
 
-      var opt = arguments[0],
-          args = Array.prototype.slice.call(arguments, 1),
-          l = selector.length,
-          ret = selector;
+      var options = arguments[0];
+      var args = Array.prototype.slice.call(arguments, 1);
+      var result = selector;
 
-      for (var i = 0; i < l; i++) {
-        if (_typeof(opt) == 'object' || typeof opt == 'undefined') {
-          var inst = new Module(selector[i], opt);
+      for (var i = 0; i < selector.length; i++) {
+        if (_typeof(options) == 'object' || typeof options == 'undefined') {
+          var inst = new Module(selector[i], options);
           inst.list[inst.hash] = inst;
         } else {
-          ret = selector[i][lib][opt].apply(selector[i][lib], args) || selector;
+          result = selector[i][lib][options].apply(selector[i][lib], args) || selector;
         }
       }
 
-      return ret;
+      return result;
     });
   };
 })(jQuery);

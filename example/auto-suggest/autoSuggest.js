@@ -1,5 +1,5 @@
 /**
-* @ModuleCreator version 1.1.0
+* @ModuleCreator version 1.2.0
 * @module AutoSuggest
 * @plugin autoSuggest
 * @example $.autoSuggest(object)
@@ -37,7 +37,6 @@ $(function () {
 			afterCreate: function () {},
 		},
 		privateMethods: {
-			// olol: function () {},
 			_onClick: function () {
 				this.hooks('customHook', 'arg1', 'arg2')
 			},

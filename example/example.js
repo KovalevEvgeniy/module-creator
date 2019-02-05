@@ -1,5 +1,5 @@
 /**
-* @ModuleCreator version 1.0
+* @ModuleCreator version 1.2.0
 * @module ModuleName
 * @plugin moduleName
 * @example $.moduleName(object)
@@ -31,6 +31,11 @@ $(function () {
 					console.log('base initing')
 				}
 				$(this.element).trigger('create', {})
+			},
+			_getEventList: function () {
+				return $.extend({}, this.super('_getEventList'), {
+					'myEvent': 'myMobileEvent'
+				})
 			},
 			_onClick: function (e) {
 				// this - инст модуля
