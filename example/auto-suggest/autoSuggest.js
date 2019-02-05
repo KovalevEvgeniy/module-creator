@@ -28,9 +28,9 @@ $(function () {
 				var input = this.views.input
 				var list = this.views.list
 
-				$(document).on(inst.getEventName('click'), inst._onClick)
-				input.on(inst.getEventName('click'), inst._onClickInput)
-				list.on(inst.getEventName('click'), '.js-suggest-item', function (e) {
+				$(document).on(inst._getEventName('click'), inst._onClick)
+				input.on(inst._getEventName('click'), inst._onClickInput)
+				list.on(inst._getEventName('click'), '.js-suggest-item', function (e) {
 					inst._selectItem(e.currentTarget)
 				})
 			},
@@ -111,8 +111,8 @@ $(function () {
 				for (var key in inst.list) {
 					if (inst.hash == key) {
 						list.slideDown(75)
-						$(document).on(inst.getEventName('click'), inst._closeList)
-						$(document).on(inst.getEventName('keyup'), inst._onPressKey)
+						$(document).on(inst._getEventName('click'), inst._closeList)
+						$(document).on(inst._getEventName('keyup'), inst._onPressKey)
 					} else {
 						inst.list[key]._closeList()
 					}
@@ -127,8 +127,8 @@ $(function () {
 
 				list.slideUp(75)
 				inst.element.removeClass('opened')
-				$(document).off(inst.getEventName('click'))
-				$(document).off(inst.getEventName('keyup'))
+				$(document).off(inst._getEventName('click'))
+				$(document).off(inst._getEventName('keyup'))
 			},
 			_selectItem: function (el) {
 				var inst = this

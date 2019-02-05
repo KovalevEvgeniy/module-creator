@@ -5,25 +5,29 @@
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 ;
 
 (function ($) {
-  $.CreateModule = function (props) {
-    props = props || {};
+  $.CreateModule = function () {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var name = props.name;
     var lib = name.substr(0, 1).toLowerCase() + name.substr(1);
     var list = {};
     var storage = {};
 
-    var Module = function Module(el, options) {
+    var Module = function Module(el) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      _classCallCheck(this, Module);
+
       var inst = this;
-      var storage = {};
       Object.defineProperty(inst, "storage", {
         get: function get() {
           return storage;
         }
       });
-      options = options || {};
       inst.data = $.extend({}, props.data || {}, options.data || {});
       inst.list = list;
       inst.element = $(el);
@@ -88,14 +92,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }; // private methods
 
       if (props.publicMethods) {
-        for (var key in props.publicMethods) {
-          el[lib][key] = props.publicMethods[key].bind({
+        for (var _key in props.publicMethods) {
+          el[lib][_key] = props.publicMethods[_key].bind({
             inst: el[lib],
             private: privateMethods
           });
 
-          if (inst[key]) {
-            throw 'The ' + key + ' method is already defined in a private scope!';
+          if (inst[_key]) {
+            throw 'The ' + _key + ' method is already defined in a private scope!';
           }
         }
       }
@@ -103,7 +107,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       inst.hooks('create');
       inst.hooks('bindEvent');
       inst.hooks('afterCreate');
-    };
+    } // sayName() {
+    // 	console.log(`Person ${this.name} said his name`);
+    // }
+    ;
 
     $[lib] = $[lib] || ($.fn[lib] = function () {
       var selector = this;

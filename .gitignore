@@ -1,3 +1,6 @@
 node_modules
 tmp
 package-lock.json
+project.sublime-project
+.sublime-gulp.cache
+project.sublime-workspace
