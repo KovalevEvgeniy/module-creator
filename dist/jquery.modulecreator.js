@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.2.0 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.2.1 | MIT & BSD
  */
 "use strict";
 
@@ -35,7 +35,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return storage;
           },
           set: function set(val) {
-            throw 'Setting the value to "' + val + '" failed. Object "storage" is not editable';
+            throw new Error('Setting the value to "' + val + '" failed. Object "storage" is not editable');
           }
         });
         Object.defineProperty(inst, "list", {
@@ -43,7 +43,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return list;
           },
           set: function set(val) {
-            throw 'Setting the value to "' + val + '" failed. Object "list" is not editable';
+            throw new Error('Setting the value to "' + val + '" failed. Object "list" is not editable');
           }
         });
         inst.element = $(el);
@@ -57,24 +57,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         el = inst.element.get(0);
         inst.hash = el.hash = Math.round(new Date() * Math.random());
+        var privateData = Object.assign({}, props.data || {}, options.data || {});
         Object.defineProperty(inst, "data", {
           get: function get() {
-            return Object.assign({}, props.data || {}, options.data || {});
+            return privateData;
           }
+        });
+        var privateOptions = Object.assign({}, props.options || {}, options.options || {}, {
+          hash: inst.hash
         });
         Object.defineProperty(inst, "options", {
           get: function get() {
-            return Object.assign({}, props.options || {}, options.options || {}, {
-              hash: inst.hash
-            });
+            return privateOptions;
           }
         });
         var hooks = Object.assign({}, props.hooks, options.hooks);
-        Object.defineProperty(inst, "hooks", {
+        Object.defineProperty(inst, "hook", {
           get: function get() {
             return function (name) {
               if (hooks[name]) {
-                hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
+                for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                  args[_key - 1] = arguments[_key];
+                }
+
+                hooks[name].apply(inst, args);
               }
             };
           }
@@ -83,18 +89,22 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           get: function get() {
             return function (name) {
               if (this.__proto__[name]) {
-                return this.__proto__[name].apply(this, Array.prototype.slice.call(arguments, 1));
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                  args[_key2 - 1] = arguments[_key2];
+                }
+
+                return this.__proto__[name].apply(this, args);
               }
             };
           }
         });
-        inst.hooks('beforeCreate');
+        inst.hook('beforeCreate');
         var privateMethods = {};
 
         if (props.privateMethods) {
           for (var key in props.privateMethods) {
             if (key[0] !== '_') {
-              throw 'The name of the private method must begin with "_". Rename the method ' + key;
+              throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
             }
 
             inst[key] = privateMethods[key] = props.privateMethods[key].bind(inst);
@@ -109,25 +119,36 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         };
 
         if (props.publicMethods) {
-          for (var _key in props.publicMethods) {
-            el[lib][_key] = props.publicMethods[_key].bind({
-              inst: el[lib],
-              private: privateMethods
+          for (var _key3 in props.publicMethods) {
+            var publicContext = {};
+            Object.defineProperty(publicContext, "inst", {
+              get: function get() {
+                return el[lib];
+              }
             });
+            Object.defineProperty(publicContext, "private", {
+              get: function get() {
+                return privateMethods;
+              },
+              set: function set(val) {
+                throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+              }
+            });
+            el[lib][_key3] = props.publicMethods[_key3].bind(publicContext);
 
-            if (inst[_key]) {
-              throw 'The ' + _key + ' method is already defined in a private scope!';
+            if (inst[_key3]) {
+              throw new Error('The ' + _key3 + ' method is already defined in a private scope!');
             }
 
-            if (_key[0] === '_') {
-              throw 'The public method should not start with "_". Rename the method ' + _key;
+            if (_key3[0] === '_') {
+              throw new Error('The public method should not start with "_". Rename the method ' + _key3);
             }
           }
         }
 
-        inst.hooks('create');
-        inst.hooks('bindEvent');
-        inst.hooks('afterCreate');
+        inst.hook('create');
+        inst.hook('bindEvent');
+        inst.hook('afterCreate');
       }
 
       _createClass(Module, [{

@@ -11,13 +11,13 @@
 				Object.defineProperty(inst, "storage", {
 					get: () => storage,
 					set (val) {
-						throw ('Setting the value to "' + val + '" failed. Object "storage" is not editable');
+						throw new Error('Setting the value to "' + val + '" failed. Object "storage" is not editable');
 					}
 				});
 				Object.defineProperty(inst, "list", {
 					get: () => list,
 					set (val) {
-						throw ('Setting the value to "' + val + '" failed. Object "list" is not editable');
+						throw new Error('Setting the value to "' + val + '" failed. Object "list" is not editable');
 					}
 				});
 
@@ -32,37 +32,38 @@
 
 				el = inst.element.get(0);
 				inst.hash = el.hash = Math.round(new Date() * Math.random());
-
+				
+				const privateData = Object.assign({}, (props.data || {}), (options.data || {}))
 				Object.defineProperty(inst, "data", {
-					get: () => Object.assign({}, (props.data || {}), (options.data || {}))
+					get: () => privateData
 				});
+				const privateOptions = Object.assign({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
 				Object.defineProperty(inst, "options", {
-					get: () => Object.assign({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
+					get: () => privateOptions
 				});
-
 				const hooks = Object.assign({}, props.hooks, options.hooks);
-				Object.defineProperty(inst, "hooks", {
-					get: () => (function (name) {
+				Object.defineProperty(inst, "hook", {
+					get: () => (function (name, ...args) {
 						if (hooks[name]) {
-							hooks[name].apply(inst, Array.prototype.slice.call(arguments, 1));
+							hooks[name].apply(inst, args);
 						}
 					})
 				});
 				Object.defineProperty(inst, "super", {
-					get: () => (function (name) {
+					get: () => (function (name, ...args) {
 						if (this.__proto__[name]) {
-							return this.__proto__[name].apply(this, Array.prototype.slice.call(arguments, 1));
+							return this.__proto__[name].apply(this, args);
 						}
 					})
 				});
 
-				inst.hooks('beforeCreate');
+				inst.hook('beforeCreate');
 
 				let privateMethods = {};
 				if (props.privateMethods) {
 					for (let key in props.privateMethods) {
 						if (key[0] !== '_') {
-							throw ('The name of the private method must begin with "_". Rename the method ' + key);
+							throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
 						}
 						inst[key] = privateMethods[key] = props.privateMethods[key].bind(inst);
 					}
@@ -77,20 +78,30 @@
 
 				if (props.publicMethods) {
 					for (let key in props.publicMethods) {
-						el[lib][key] = props.publicMethods[key].bind({inst: el[lib], private: privateMethods});
+						const publicContext = {}
+						Object.defineProperty(publicContext, "inst", {
+							get: () => el[lib]
+						});
+						Object.defineProperty(publicContext, "private", {
+							get: () => privateMethods,
+							set (val) {
+								throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+							}
+						});
+						el[lib][key] = props.publicMethods[key].bind(publicContext);
 
 						if (inst[key]) {
-							throw ('The ' + key + ' method is already defined in a private scope!');
+							throw new Error('The ' + key + ' method is already defined in a private scope!');
 						}
 						if (key[0] === '_') {
-							throw ('The public method should not start with "_". Rename the method ' + key);
+							throw new Error('The public method should not start with "_". Rename the method ' + key);
 						}
 					}
 				}
 
-				inst.hooks('create');
-				inst.hooks('bindEvent');
-				inst.hooks('afterCreate');
+				inst.hook('create');
+				inst.hook('bindEvent');
+				inst.hook('afterCreate');
 			}
 
 			_getEventList () {

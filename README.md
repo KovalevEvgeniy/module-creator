@@ -201,7 +201,7 @@ $(function () {
 ```
 You can call them only in private methods.
 ``` js
-this.hooks('customHook', arg1, arg2);
+this.hook('customHook', arg1, arg2);
 ```
 
 ### Patch Notes

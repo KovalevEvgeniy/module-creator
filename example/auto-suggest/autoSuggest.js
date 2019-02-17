@@ -34,11 +34,11 @@ $(function () {
 					inst._selectItem(e.currentTarget)
 				})
 			},
-			afterCreate: function () {},
+			customHook: function () {},
 		},
 		privateMethods: {
 			_onClick: function () {
-				this.hooks('customHook', 'arg1', 'arg2')
+				this.hook('customHook', 'arg1', 'arg2')
 			},
 			_create: function () {
 				var inst = this

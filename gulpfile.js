@@ -1,12 +1,14 @@
-var gulp = require('gulp');
-var babel = require('gulp-babel');
-var plumber = require('gulp-plumber');
-var concat = require("gulp-concat");
-var minify = require('gulp-uglify');
-var rename = require('gulp-rename');
-var description = 'src/description.js'
+const gulp = require('gulp');
+const babel = require('gulp-babel');
+const plumber = require('gulp-plumber');
+const concat = require("gulp-concat");
+const minify = require('gulp-uglify');
+const rename = require('gulp-rename');
+const mocha = require('gulp-mocha');
+const log = require('gulplog');
+const description = 'src/description.js'
 
-var tmp = function (done) {
+const tmp = function (done) {
 	return gulp.src('src/jquery.modulecreator.js')
 		.pipe(babel({
 			presets: ['@babel/env']
@@ -16,9 +18,10 @@ var tmp = function (done) {
 		.pipe(rename('jquery.modulecreator.min.js'))
 		.pipe(gulp.dest('tmp'));
 
-	done()
-}
-var finish = function (done) {
+	done();
+};
+
+const dist = function (done) {
 	gulp.src([description, 'tmp/jquery.modulecreator.js'])
 		.pipe(concat('jquery.modulecreator.js'))
 		.pipe(gulp.dest('dist'));
@@ -27,7 +30,11 @@ var finish = function (done) {
 		.pipe(concat('jquery.modulecreator.min.js'))
 		.pipe(gulp.dest('dist'));
 
-	done()
-}
+	done();
+};
 
-gulp.task('default', gulp.series(tmp, finish));
+const watch = function (done) {
+	gulp.watch(['./src/*.*'], gulp.series(tmp, dist));
+};
+
+gulp.task('default', gulp.series(tmp, dist, watch));
