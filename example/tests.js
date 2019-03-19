@@ -5,29 +5,44 @@
 * @example $.testName(object) || $('#example').testName(object)
 * @author Kovalev Evgeniy
 **/
+const Test = {
+	styles: {
+		succes: 'color: #25a3ec',
+		error: 'color: #d62020',
+		life: 'color: #777'
+	},
+	log (message, type) {
+		if (type === 'success') {
+			console.log('%c 🔵 ' + message, this.styles.succes)
+		} else if (type === 'error') {
+			console.log('%c 🔴 ' + message, this.styles.error)
+		} else if (type === 'life') {
+			console.log('%c ⚫️ ' + message, this.styles.life)
+		}
+	}
+};
+
 $(function () {
 	$.CreateModule({
 		name: 'TestName',
 		data: {},
-		options: {
-			succesStyle: 'color: #bada55',
-			errorStyle: 'color: #ff528a',
-			lifeStyle: 'color: #777'
-		},
+		options: {},
 		hooks: {
 			beforeCreate: function () {console.log('%c' + 'Life cycle: beforeCreate', this.options.lifeStyle)},
 			create: function () {
-				console.log('%c' + 'Life cycle: create', this.options.lifeStyle);
+				Test.log(`Life cycle: create`, 'life')
 				this._init()
 			},
 			bindEvent: function () {
-				console.log('%c' + 'Life cycle: bindEvent', this.options.lifeStyle);
+				Test.log(`Life cycle: bindEvent`, 'life')
 				$(this.element).on(this._getEventName('click', this.hash), this._testClick)
 				$(this.element).trigger('click')
 			},
-			afterCreate: function () {console.log('%c' + 'Life cycle: afterCreate', this.options.lifeStyle);},
+			afterCreate: function () {
+				Test.log(`Life cycle: afterCreate`, 'life')
+			},
 			customHook: function () {
-				this._console(`Hook is working`, true)
+				Test.log(`Hook is working`, 'success')
 			}
 		},
 		privateMethods: {
@@ -46,20 +61,11 @@ $(function () {
 				// this - инст модуля
 				var element = $(e.currentTarget)
 				console.log('anithing code')
-				
 			},
 			_examplePrivateMethod: function () {
 				var element = this.element
 				console.log('private code');
 			},
-			_console: function (message, success) {
-				if (success) {
-					console.log('%c' + message, this.options.succesStyle)
-				} else {
-					console.log('%c' + message, this.options.errorStyle)
-				}
-			},
-
 			_tests: function () {
 				console.log('Tests:');
 
@@ -71,9 +77,9 @@ $(function () {
 			},
 			_testHook: function () {
 				try {
-					this.hook('customHook');
+					this.hook('customHook')
 				} catch (err) {
-					this._console(`Hook dont working`, false)
+					Test.log(`Hook dont working`, 'error')
 				}
 			},
 			_testEditable: function (name) {
@@ -94,15 +100,15 @@ $(function () {
 				}
 
 				if (isEditableObject) {
-					this._console(`Object "${name}" is editable`, false)
+					Test.log(`Object "${name}" is editable`, 'error')
 				} else {
-					this._console(`Object "${name}" is not editable`, true)
+					Test.log(`Object "${name}" is not editable`, 'success')
 				}
 
 				if (isRewritableProp) {
-					this._console(`Object "${name}" properties rewritable`, true)
+					Test.log(`Object "${name}" properties rewritable`, 'success')
 				} else {
-					this._console(`Object "${name}" is not properties rewritable`, false)
+					Test.log(`Object "${name}" is not properties rewritable`, 'error')
 				}
 			},
 			_testClick: function (e) {
@@ -116,17 +122,17 @@ $(function () {
 				try {
 					this.private = 'test string';
 				} catch (err) {
-					this.private._console('Object "private" is not editable', true)
+					Test.log(`Object "private" is not editable`, 'success')
 				}
 
 				if (typeof this.private === 'object') {
-					if (this.private && this.private._console) {
-						this.private._console('Private methods are available from the public method', true)
+					if (this.private && this.private._tests) {
+						Test.log(`Private methods are available from the public method`, 'success')
 					} else {
-						this.private._console('Private methods are not available from the public method', false)
+						Test.log(`Private methods are not available from the public method`, 'error')
 					}
 				} else {
-					console.log('%c' + 'Object "private" is editable', 'color: #ff528a')
+					Test.log(`Object "private" is editable`, 'error')
 				}
 			}
 		}

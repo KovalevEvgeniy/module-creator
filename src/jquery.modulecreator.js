@@ -33,15 +33,15 @@
 				el = inst.element.get(0);
 				inst.hash = el.hash = Math.round(new Date() * Math.random());
 				
-				const privateData = Object.assign({}, (props.data || {}), (options.data || {}))
+				const privateData = $.extend({}, (props.data || {}), (options.data || {}))
 				Object.defineProperty(inst, "data", {
 					get: () => privateData
 				});
-				const privateOptions = Object.assign({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
+				const privateOptions = $.extend({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
 				Object.defineProperty(inst, "options", {
 					get: () => privateOptions
 				});
-				const hooks = Object.assign({}, props.hooks, options.hooks);
+				const hooks = $.extend({}, props.hooks, options.hooks);
 				Object.defineProperty(inst, "hook", {
 					get: () => (function (name, ...args) {
 						if (hooks[name]) {

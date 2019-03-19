@@ -57,13 +57,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         el = inst.element.get(0);
         inst.hash = el.hash = Math.round(new Date() * Math.random());
-        var privateData = Object.assign({}, props.data || {}, options.data || {});
+        var privateData = $.extend({}, props.data || {}, options.data || {});
         Object.defineProperty(inst, "data", {
           get: function get() {
             return privateData;
           }
         });
-        var privateOptions = Object.assign({}, props.options || {}, options.options || {}, {
+        var privateOptions = $.extend({}, props.options || {}, options.options || {}, {
           hash: inst.hash
         });
         Object.defineProperty(inst, "options", {
@@ -71,7 +71,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             return privateOptions;
           }
         });
-        var hooks = Object.assign({}, props.hooks, options.hooks);
+        var hooks = $.extend({}, props.hooks, options.hooks);
         Object.defineProperty(inst, "hook", {
           get: function get() {
             return function (name) {
