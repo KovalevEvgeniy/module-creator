@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../dist/jquery.modulecreator.min.js"></script>
+	<script src="./posterVideoNew.js"></script>
+</head>
+<body>
+	<main>
+		<section>
+			
+			<!-- Initing with data attributes -->
+			<div class="video video_640 js__video"
+				data-poster-video-preview="http://via.placeholder.com/640x480"
+				data-poster-video-src="https://www.youtube.com/embed/6xKWiCMKKJg"
+			></div>
+			<script>
+				$(function() {
+					$('.js__video').posterVideo()
+				})
+			</script>
+
+			<!-- Initing with options -->
+			<div class="video video_400 js__video-2"></div>
+			<script>
+				$(function() {
+					$('.js__video-2').posterVideo({
+						options: {
+							src: 'https://www.youtube.com/embed/6xKWiCMKKJg',
+							preview: 'http://via.placeholder.com/400x400',
+							relation: (1 / 1),
+							needBtnPtay: false
+						}
+					})
+				})
+			</script>
+
+		</section>
+
+		<style>
+			.video {
+				border: 1px solid #333;
+				margin: 40px auto;
+				position: relative;
+			}
+			.video_640 {
+				width: 640px;
+			}
+			.video_400 {
+				width: 400px;
+			}
+
+			.poster-video__btn-play {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				background: #f00;
+				width: 50px;
+				height: 50px;
+				margin-top: -25px;
+				margin-left: -25px;
+			}
+		</style>
+	</main>
+</body>
+</html>
