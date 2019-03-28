@@ -12,7 +12,9 @@
 *
 *	<script src="./f/js/jquery.min.js"></script>
 *	<script src="./f/js/jquery.modulecreator.min.js"></script>
-*	$('.js__video').posterVideo()
+*	$('.js__video').posterVideo({
+*		options: {}
+*	})
 *
 **/
 
@@ -41,13 +43,11 @@ $.CreateModule({
 	},
 	privateMethods: {
 		_init () {
-			if (!this.element.hasClass('poster-video')) {
-				this._setOptions();
-				this._createElements();
-				this._updateElementsSize();
+			this._setOptions();
+			this._createElements();
+			this._updateElementsSize();
 
-				this.element.addClass('poster-video');
-			}
+			this.element.addClass('poster-video');
 		},
 		_setOptions () {
 			let inlineData = this.element.data();
@@ -92,7 +92,8 @@ $.CreateModule({
 		},
 		_createVideo () {
 			return {
-				'youtube': this._createVideoYoutube
+				'youtube': this._createVideoYoutube,
+				'html5': this._createVideoHtml5
 			}[this.options.videoType]();
 		},
 		_createVideoYoutube () {
@@ -103,6 +104,13 @@ $.CreateModule({
 				frameborder="0" allow="autoplay; encrypted-media"
 				allowfullscreen>
 			</iframe>')`);
+
+			video.addClass('poster-video-video');
+
+			return video;
+		},
+		_createVideoHtml5: function _createVideoHtml5() {
+			let video = $('<video autoplay loop muted controls><source src="' + this.options.src + '" type="video/mp4" /></video>');
 
 			video.addClass('poster-video-video');
 

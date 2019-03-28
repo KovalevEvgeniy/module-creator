@@ -20,6 +20,7 @@
 			<script>
 				$(function() {
 					$('.js__video').posterVideo()
+					$('.js__video').posterVideo()
 				})
 			</script>
 
@@ -29,12 +30,14 @@
 				$(function() {
 					$('.js__video-2').posterVideo({
 						options: {
-							src: 'https://www.youtube.com/embed/6xKWiCMKKJg',
+							videoType: 'html5',
+							src: 'https://r1---sn-xguxaxjvh-8v1e.googlevideo.com/videoplayback?id=o-ANH72AN3LRR6lZAASk0nzNqVQ28qZyhGlfxss4-8m3hR&expire=1553176946&ei=EkWTXMyFBsXTyQXj0JeoCA&ip=94.180.24.36&lmt=1541369548417760&pcm2cms=yes&mt=1553155225&mv=m&ms=au%2Crdu&dur=60.209&gir=yes&mm=31%2C29&mn=sn-xguxaxjvh-8v1e%2Csn-n8v7znlr&itag=18&ipbits=0&fvip=18&clen=4702746&mime=video%2Fmp4&key=yt6&txp=5431432&requiressl=yes&ratebypass=yes&sparams=clen%2Cdur%2Cei%2Cgir%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpcm2cms%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cexpire&source=youtube&initcwndbps=1207500&pl=22&c=WEB&nh=%2CIgpwcjAxLnN2bzA1KgkxMjcuMC4wLjE&signature=99D0E53A66061552454480173A12FCF3ED8F7443.69D4373C1160508A612FAB92E64F47097C26C013&title=Pok%C3%A9mon%20Season%201_%20Indigo%20League%20-%20Opening%20Theme',
 							preview: 'http://via.placeholder.com/400x400',
 							relation: (1 / 1),
 							needBtnPtay: false
 						}
 					})
+					$('.js__video').posterVideo()
 				})
 			</script>
 
@@ -52,7 +55,10 @@
 			.video_400 {
 				width: 400px;
 			}
-
+			
+			.poster-video-video {
+				max-width: 100%;
+			}
 			.poster-video__btn-play {
 				position: absolute;
 				top: 50%;
