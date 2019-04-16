@@ -1,13 +1,36 @@
 ;(function ($) {
 	$.CreateModule = function (props = {}) {
 		const name = props.name;
-		const lib = name.substr(0,1).toLowerCase() + name.substr(1);
+		const getLibName = function (name) {
+			return name.substr(0,1).toLowerCase() + name.substr(1);
+		}
+		const lib = getLibName(name);
 		const list = {};
 		const storage = {};
+		
 
 		class Module {
 			constructor(el, options = {}) {
 				const inst = this;
+				let inheritOptipns = {}
+
+				inst.struct = props
+
+				if (props.extends && props.extends.length > 0) {
+					for (let key in props.extends) {
+						let name = props.extends[key]
+						let parentInstans = $[getLibName(name)]();
+						let parentStruct = parentInstans[getLibName(name)]('getStruct');
+
+						// Add the ability to call private parent methods with super
+						inst._extend(inst.__proto__, parentStruct.privateMethods)
+
+						// Updated our properties using the parent struct and save him in struct of the current instance
+						inst.struct = inst._extend({}, parentStruct, props);
+						props = inst.struct;
+					}
+				}
+
 				Object.defineProperty(inst, "storage", {
 					get: () => storage,
 					set (val) {
@@ -33,26 +56,26 @@
 				el = inst.element.get(0);
 				inst.hash = el.hash = Math.round(new Date() * Math.random());
 				
-				const privateData = $.extend({}, (props.data || {}), (options.data || {}))
+				const privateData = inst._extend({}, (props.data || {}), (options.data || {}))
 				Object.defineProperty(inst, "data", {
 					get: () => privateData
 				});
-				const privateOptions = $.extend({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
+				const privateOptions = inst._extend({}, (props.options || {}), (options.options || {}), {hash: inst.hash})
 				Object.defineProperty(inst, "options", {
 					get: () => privateOptions
 				});
-				const hooks = $.extend({}, props.hooks, options.hooks);
+				const hooks = inst._extend({}, props.hooks, options.hooks);
 				Object.defineProperty(inst, "hook", {
 					get: () => (function (name, ...args) {
 						if (hooks[name]) {
-							hooks[name].apply(inst, args);
+							return hooks[name].apply(inst, args);
 						}
 					})
 				});
 				Object.defineProperty(inst, "super", {
 					get: () => (function (name, ...args) {
 						if (this.__proto__[name]) {
-							return this.__proto__[name].apply(this, args);
+							return inst.__proto__[name].apply(this, args);
 						}
 					})
 				});
@@ -71,7 +94,10 @@
 
 				el[lib] = {
 					data: inst.data,
-					destroy: function () {
+					getStruct () {
+						return inst._getStruct();
+					},
+					destroy () {
 						inst._destroy();
 					}
 				};
@@ -124,6 +150,68 @@
 				delete el.hash;
 				delete el[lib];
 			}
+
+			_extend (result = {}, ...objects) {
+				for (let i = 0; i < objects.length; i++) {
+					let obj = objects[i];
+
+					for (let key in obj) {
+						let current = obj[key]
+
+						if (typeof current === 'function') {
+							result[key] = current
+						} else if (Array.isArray(current)) {
+							let tmpArr = current.slice()
+
+							result[key] = tmpArr
+						} else if (typeof current === 'object') {
+							let tmpObj = {}
+
+							if (Array.isArray(result[key])) {
+								tmpObj = this._extend({}, current)
+							} else if (typeof result[key] === 'object') {
+								tmpObj = this._extend(result[key], current)
+							} else {
+								tmpObj = this._extend({}, current)
+							}
+
+							result[key] = tmpObj
+						} else {
+							result[key] = current
+						}
+					}
+				}
+
+				return result
+			}
+
+			_deepCopy (target) {
+				if (typeof target === 'function') {
+					return target
+				} else if (Array.isArray(target)) {
+					let tmpArr = target.slice()
+
+					for (var i = 0; i < tmpArr.length; i++) {
+						tmpArr[i] = this._deepCopy(tmpArr[i])
+					}
+
+					return tmpArr
+				} else if (typeof target === 'object') {
+					let tmpObj = this._extend({}, target)
+
+					for (let key in tmpObj) {
+						tmpObj[key] = this._deepCopy(tmpObj[key])
+					}
+
+					return tmpObj
+				} else {
+					return target
+				}
+			}
+
+			_getStruct () {
+				return this._deepCopy(this.struct)
+			}
 		}
 
 		$[lib] = $[lib] || ($.fn[lib] = function () {
@@ -150,4 +238,3 @@
 		});
 	}
 })(jQuery);
-
