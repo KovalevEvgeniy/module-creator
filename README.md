@@ -102,11 +102,6 @@ $(function () {
 });
 ```
 
-Since there is always a hash in namespace, you can quickly remove all handlers associated with that instance.
-``` js
-$('*').off(this.hash);
-```
-
 ## Documentation
 ### Methods
 You can call public methods on an instance from an element
@@ -125,7 +120,7 @@ this.private._examplePrivateMethod(arg1, arg2);
 ### Parent methods
 Several methods already exist by default, but of course you can override them.
 
-
+Wrapper method for adding event listeners. You can read more about its use in the Bindings block.
 ``` js
 inst._getEventList()
 ```
@@ -186,6 +181,10 @@ privateMethods: {
     // ...
 }
 ```
+Since there is always a hash in namespace, you can quickly remove all handlers associated with that instance.
+``` js
+$('*').off(this.hash);
+```
 
 ### Options and Data
 `data` and `options` are basically the same. the only difference is the scope.
@@ -230,7 +229,7 @@ You can call them only in private methods.
 this.hook('customHook', arg1, arg2);
 ```
 
-## Extends
+### Extends
 You can now inherit from previously created modules. You can now inherit from existing modules. Just add their names to the `extends` field as an array.
 Your copy works immediately. Because all hooks, private methods and options are inherited.
 Of course, all overridden methods can be called via `super`.
