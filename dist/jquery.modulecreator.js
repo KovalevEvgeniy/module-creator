@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.2.1 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.3.0 | MIT & BSD
  */
 "use strict";
 
@@ -17,7 +17,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   $.CreateModule = function () {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var name = props.name;
-    var lib = name.substr(0, 1).toLowerCase() + name.substr(1);
+
+    var getLibName = function getLibName(name) {
+      return name.substr(0, 1).toLowerCase() + name.substr(1);
+    };
+
+    var lib = getLibName(name);
     var list = {};
     var storage = {};
 
@@ -30,6 +35,23 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         _classCallCheck(this, Module);
 
         var inst = this;
+        var inheritOptipns = {};
+        inst.struct = props;
+
+        if (props.extends && props.extends.length > 0) {
+          for (var key in props.extends) {
+            var _name = props.extends[key];
+            var parentInstans = $[getLibName(_name)]();
+            var parentStruct = parentInstans[getLibName(_name)]('getStruct'); // Add the ability to call private parent methods with super
+
+            inst._extend(inst.__proto__, parentStruct.privateMethods); // Updated our properties using the parent struct and save him in struct of the current instance
+
+
+            inst.struct = inst._extend({}, parentStruct, props);
+            props = inst.struct;
+          }
+        }
+
         Object.defineProperty(inst, "storage", {
           get: function get() {
             return storage;
@@ -57,21 +79,27 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
         el = inst.element.get(0);
         inst.hash = el.hash = Math.round(new Date() * Math.random());
-        var privateData = $.extend({}, props.data || {}, options.data || {});
+
+        var privateData = inst._extend({}, props.data || {}, options.data || {});
+
         Object.defineProperty(inst, "data", {
           get: function get() {
             return privateData;
           }
         });
-        var privateOptions = $.extend({}, props.options || {}, options.options || {}, {
+
+        var privateOptions = inst._extend({}, props.options || {}, options.options || {}, {
           hash: inst.hash
         });
+
         Object.defineProperty(inst, "options", {
           get: function get() {
             return privateOptions;
           }
         });
-        var hooks = $.extend({}, props.hooks, options.hooks);
+
+        var hooks = inst._extend({}, props.hooks, options.hooks);
+
         Object.defineProperty(inst, "hook", {
           get: function get() {
             return function (name) {
@@ -80,7 +108,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   args[_key - 1] = arguments[_key];
                 }
 
-                hooks[name].apply(inst, args);
+                return hooks[name].apply(inst, args);
               }
             };
           }
@@ -93,7 +121,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   args[_key2 - 1] = arguments[_key2];
                 }
 
-                return this.__proto__[name].apply(this, args);
+                return inst.__proto__[name].apply(this, args);
               }
             };
           }
@@ -102,24 +130,27 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var privateMethods = {};
 
         if (props.privateMethods) {
-          for (var key in props.privateMethods) {
-            if (key[0] !== '_') {
-              throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
+          for (var _key3 in props.privateMethods) {
+            if (_key3[0] !== '_') {
+              throw new Error('The name of the private method must begin with "_". Rename the method ' + _key3);
             }
 
-            inst[key] = privateMethods[key] = props.privateMethods[key].bind(inst);
+            inst[_key3] = privateMethods[_key3] = props.privateMethods[_key3].bind(inst);
           }
         }
 
         el[lib] = {
           data: inst.data,
+          getStruct: function getStruct() {
+            return inst._getStruct();
+          },
           destroy: function destroy() {
             inst._destroy();
           }
         };
 
         if (props.publicMethods) {
-          for (var _key3 in props.publicMethods) {
+          for (var _key4 in props.publicMethods) {
             var publicContext = {};
             Object.defineProperty(publicContext, "inst", {
               get: function get() {
@@ -134,14 +165,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
               }
             });
-            el[lib][_key3] = props.publicMethods[_key3].bind(publicContext);
+            el[lib][_key4] = props.publicMethods[_key4].bind(publicContext);
 
-            if (inst[_key3]) {
-              throw new Error('The ' + _key3 + ' method is already defined in a private scope!');
+            if (inst[_key4]) {
+              throw new Error('The ' + _key4 + ' method is already defined in a private scope!');
             }
 
-            if (_key3[0] === '_') {
-              throw new Error('The public method should not start with "_". Rename the method ' + _key3);
+            if (_key4[0] === '_') {
+              throw new Error('The public method should not start with "_". Rename the method ' + _key4);
             }
           }
         }
@@ -173,6 +204,72 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           delete this.list[this.hash];
           delete el.hash;
           delete el[lib];
+        }
+      }, {
+        key: "_extend",
+        value: function _extend() {
+          var result = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+          for (var i = 0; i < (arguments.length <= 1 ? 0 : arguments.length - 1); i++) {
+            var obj = i + 1 < 1 || arguments.length <= i + 1 ? undefined : arguments[i + 1];
+
+            for (var key in obj) {
+              var current = obj[key];
+
+              if (typeof current === 'function') {
+                result[key] = current;
+              } else if (Array.isArray(current)) {
+                var tmpArr = current.slice();
+                result[key] = tmpArr;
+              } else if (_typeof(current) === 'object') {
+                var tmpObj = {};
+
+                if (Array.isArray(result[key])) {
+                  tmpObj = this._extend({}, current);
+                } else if (_typeof(result[key]) === 'object') {
+                  tmpObj = this._extend(result[key], current);
+                } else {
+                  tmpObj = this._extend({}, current);
+                }
+
+                result[key] = tmpObj;
+              } else {
+                result[key] = current;
+              }
+            }
+          }
+
+          return result;
+        }
+      }, {
+        key: "_deepCopy",
+        value: function _deepCopy(target) {
+          if (typeof target === 'function') {
+            return target;
+          } else if (Array.isArray(target)) {
+            var tmpArr = target.slice();
+
+            for (var i = 0; i < tmpArr.length; i++) {
+              tmpArr[i] = this._deepCopy(tmpArr[i]);
+            }
+
+            return tmpArr;
+          } else if (_typeof(target) === 'object') {
+            var tmpObj = this._extend({}, target);
+
+            for (var key in tmpObj) {
+              tmpObj[key] = this._deepCopy(tmpObj[key]);
+            }
+
+            return tmpObj;
+          } else {
+            return target;
+          }
+        }
+      }, {
+        key: "_getStruct",
+        value: function _getStruct() {
+          return this._deepCopy(this.struct);
         }
       }]);
 
