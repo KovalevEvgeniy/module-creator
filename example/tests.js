@@ -24,7 +24,29 @@ const Test = {
 
 $(function () {
 	$.CreateModule({
+		name: 'TestParent',
+		data: {},
+		options: {
+			parentOption: true
+		},
+		hooks: {
+			parentHook: function () {
+				return true
+			}
+		},
+		privateMethods: {
+			_parentMethod: function () {
+				return true
+			},
+			_testExtends: function () {
+				return true
+			}
+		}
+	});
+
+	$.CreateModule({
 		name: 'TestName',
+		extends: ['testParent'],
 		data: {},
 		options: {},
 		hooks: {
@@ -57,11 +79,6 @@ $(function () {
 					'myEvent': 'myMobileEvent'
 				})
 			},
-			_onClick: function (e) {
-				// this - инст модуля
-				var element = $(e.currentTarget)
-				console.log('anithing code')
-			},
 			_examplePrivateMethod: function () {
 				var element = this.element
 				console.log('private code');
@@ -74,6 +91,7 @@ $(function () {
 				this._testEditable('list')
 				this._testEditable('data')
 				this._testEditable('options')
+				this._testExtends()
 			},
 			_testHook: function () {
 				try {
@@ -114,6 +132,33 @@ $(function () {
 			_testClick: function (e) {
 				if (e.type === 'click') {
 					console.log('Event: ' + true);
+				}
+			},
+			_testExtends: function () {
+				console.log('extends:');
+				if (this.options.parentOption) {
+					Test.log(`Parent options is available`, 'success')
+				} else {
+					Test.log(`Parent options is not available`, 'error')
+				}
+
+				try {
+					this._parentMethod()
+					Test.log(`Parent methods is available`, 'success')
+				} catch (err) {
+					Test.log(`Parent methods is not available`, 'error')
+				}
+
+				if (this.hook('parentHook')) {
+					Test.log(`Parent hooks is available`, 'success')
+				} else {
+					Test.log(`Parent hooks is not available`, 'error')
+				}
+
+				if (this.super('_testExtends')) {
+					Test.log(`Parent methods to be called with super`, 'success')
+				} else {
+					Test.log(`Parent methods cannot be called with super`, 'error')
 				}
 			}
 		},

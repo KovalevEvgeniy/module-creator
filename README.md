@@ -1,46 +1,51 @@
 # ModuleCreator
-#### version 1.1
+#### latest version 1.3.0
 
 ## Usage
 
 ### Quick start
-#### Creating a module
 
+#### Dependencies
+``` html
+<script src="jquery.min.js"></script>
+<script src="jquery.modulecreator.min.js"></script>
+```
+
+#### Creating a module
 ``` js
 // clear
 
 /**
-* @ModuleCreator version 1.1.0
+* @ModuleCreator version 1.3.0
 * @module ModuleName
 * @example $.moduleName(object)
+* or
+* @example $(selector).moduleName(object)
 * @author Author name
 **/
 $.CreateModule({
     name: 'Name',
-    data: {},
     options: {},
     hooks: {
-        beforeCreate: function () {},
         create: function () {
             this._create();
         },
-        bindEvent: function () {},
-        afterCreate: function () {}
+        bindEvent: function () {
+            $(this.element).on(this._getEventName('click'), this._exampleHandler);
+        }
     },
     privateMethods: {
         _create: function () {},
-        _unBindEvent: function () {
-            $(this.element).off(this.hash);
-        }
+        _exampleHandler (event) {}
     },
     publicMethods: {}
 });
 ```
 ``` js
 // example with comments
-
 $.CreateModule({
     name: 'ModuleName',
+    extends: ['parentModule'],
     data: {},
     options: {},
     hooks: {
@@ -50,7 +55,7 @@ $.CreateModule({
             this._create();
         },
         bindEvent: function () {
-            $(this.element).on(this._getEventName('click'), this._examplePrivateMethod);
+            $(this.element).on(this._getEventName('click'), this._exampleHandler);
         },
         afterCreate: function () {}
     },
@@ -60,6 +65,9 @@ $.CreateModule({
         },
         _unBindEvent: function () {
             $(this.element).off(this.hash);
+        },
+        _exampleHandler: function (event) {
+            // this - is stilla link to a private instance
         },
         _examplePrivateMethod: function (arg1, arg2) {
             // code...
@@ -86,7 +94,7 @@ $(function () {
     $(selector).name([options]);
 });
 ```
-Or, if you do not need to process the elements
+Or, if you do not need to process the elements.
 
 ``` js
 $(function () {
@@ -94,11 +102,12 @@ $(function () {
 });
 ```
 
-Since there is always a hash in namespace, you can quickly remove all handlers associated with that instance
+Since there is always a hash in namespace, you can quickly remove all handlers associated with that instance.
 ``` js
 $('*').off(this.hash);
 ```
 
+## Documentation
 ### Methods
 You can call public methods on an instance from an element
 ``` js
@@ -114,12 +123,29 @@ this.private._examplePrivateMethod(arg1, arg2);
 ```
 
 ### Parent methods
-Several methods already exist by default, but of course you can override them
+Several methods already exist by default, but of course you can override them.
+
+
 ``` js
 inst._getEventList()
+```
+``` js
 inst._getEventName()
+```
+``` js
 inst._destroy()
 ```
+
+This method works just like `Object.assign` or `$.extend`, but does it deeply. Note that internal functions still do not lose context, call them via `call` or `apply`.
+``` js
+inst._extend({}, obj1, obj2)
+```
+
+This method returns a deep copy of the argument.
+``` js
+inst._deepCopy()
+```
+
 You can call the parent method in a private area as follows:
 ``` js
 this.super('_destroy');
@@ -140,7 +166,7 @@ this._getEventName('click'); // for mobile 'touchstart.[instanse hash]'
 this._getEventName('click'); // for desktop 'click.[instanse hash]'
 this._getEventName('click','exampleNamespace'); // for desktop 'click.exampleNamespace.[instanse hash]'
 ```
-The default object with events looks like this
+The default object with events looks like this.
 ``` js
 {
     'click': 'touchstart',
@@ -168,7 +194,7 @@ In a private area, you can use them like this:
 this.options.optionName
 this.data.propName
 ```
-But you can also access the `data` from the public area
+But you can also access the `data` from the public area.
 ``` js
 this.inst.data
 ```
@@ -204,9 +230,64 @@ You can call them only in private methods.
 this.hook('customHook', arg1, arg2);
 ```
 
+## Extends
+You can now inherit from previously created modules. You can now inherit from existing modules. Just add their names to the `extends` field as an array.
+Your copy works immediately. Because all hooks, private methods and options are inherited.
+Of course, all overridden methods can be called via `super`.
+
+``` js
+$.CreateModule({
+    name: 'ParentModule',
+    data: {},
+    options: {
+        parentOption: true,
+        secondOption: true
+    },
+    privateMethods: {
+        _create: function () {
+            console.log('this is parent method');
+        },
+        _testMethod: function () {
+            console.log('this method not be called');
+        }
+    },
+    publicMethods: {}
+});
+
+$.CreateModule({
+    name: 'ChildrenModule',
+    extends: ['parentModule'],
+    data: {},
+    options: {
+        childrenOption: true,
+        secondOption: false
+    },
+    hooks: {
+        create: function () {
+            this._create()
+        }
+    },
+    privateMethods: {
+        _testMethod: function () {
+            console.log('this method to be called');
+            console.log(this.options); // {parentOption: true, childrenOption: true, secondOption: false}
+        }
+    },
+    publicMethods: {}
+});
+
+```
+
 ### Patch Notes
+#### v 1.3.0
+You can now inherit from previously created modules. You can now inherit from existing modules.
+``` js
+$.newModule({
+    exends: ['parentModule']
+})
+```
 #### v 1.2.0
-Transferring sources to es6. Added method "super" to call parent methods.
+Transferring sources to es6. Added method `super` to call parent methods.
 ``` js
 this.super('_parentMethodName', arg1, arg2);
 ```
