@@ -120,8 +120,8 @@ this.private._examplePrivateMethod(arg1, arg2);
 ### Parent methods
 Several methods already exist by default, but of course you can override them.
 
-Wrapper method for adding event listeners. You can read more about its use in the Bindings block.
 ``` js
+// Wrapper method for adding event listeners. You can read more about its use in the Bindings block.
 inst._getEventList()
 ```
 ``` js
@@ -131,13 +131,13 @@ inst._getEventName()
 inst._destroy()
 ```
 
-This method works just like `Object.assign` or `$.extend`, but does it deeply. Note that internal functions still do not lose context, call them via `call` or `apply`.
 ``` js
+// This method works just like `Object.assign` or `$.extend`, but does it deeply. Note that internal functions still do not lose context, call them via `call` or `apply`.
 inst._extend({}, obj1, obj2)
 ```
 
-This method returns a deep copy of the argument.
 ``` js
+// This method returns a deep copy of the argument.
 inst._deepCopy()
 ```
 
