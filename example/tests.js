@@ -82,8 +82,14 @@ $(function () {
 	$.CreateModule({
 		name: 'TestName',
 		extends: ['testParent', 'testParent2'],
-		data: {},
-		options: {},
+		data: {
+			data1: true,
+			data2: false,
+		},
+		options: {
+			option1: true,
+			option2: false,
+		},
 		hooks: {
 			beforeCreate: function () {
 				Test.log(`Life cycle: beforeCreate`, 'life')
@@ -129,6 +135,7 @@ $(function () {
 				this._testEditable('data')
 				this._testEditable('options')
 				this._testExtends()
+				this._testInstanceOptions()
 			},
 			_testHook: function () {
 				try {
@@ -199,8 +206,34 @@ $(function () {
 					Test.log(`Parent methods cannot be called with super`, 'error')
 				}
 			},
-			_testHigthLvlSuper: function () {
-				return true
+			_testInstanceOptions () {
+				console.log('instance properties:');
+				if (this.options.option1) {
+					Test.log(`Default options is available`, 'success')
+				} else {
+					Test.log(`Default options is not available`, 'error')
+				}
+				if (this.options.option2) {
+					Test.log(`Inctance initing options is available`, 'success')
+				} else {
+					Test.log(`Inctance initing options is not available`, 'error')
+				}
+				if (this.data.data1) {
+					Test.log(`Default data is available`, 'success')
+				} else {
+					Test.log(`Default data is not available`, 'error')
+				}
+				if (this.data.data2) {
+					Test.log(`Inctance initing data is available`, 'success')
+				} else {
+					Test.log(`Inctance initing data is not available`, 'error')
+				}
+
+				this._defaultMethod()
+				this.element.testName('default')
+			},
+			_defaultMethod () {
+				Test.log(`Inctance initing private method is not available`, 'success')
 			}
 		},
 		publicMethods: {
@@ -220,6 +253,9 @@ $(function () {
 				} else {
 					Test.log(`Object "private" is editable`, 'error')
 				}
+			},
+			default: function () {
+				Test.log(`Inctance initing public method is not available`, 'success')
 			}
 		}
 	});
@@ -263,7 +299,25 @@ $(function () {
 });
 
 $(function() {
-	$('#example').testName()
+	$('#example').testName({
+		hooks: {},
+		data: {
+			data2: true
+		},
+		options: {
+			option2: true
+		},
+		publicMethods: {
+			_defaultMethod: function () {
+				Test.log(`Inctance initing private method is available`, 'error')
+			}
+		},
+		publicMethods: {
+			default: function () {
+				Test.log(`Inctance initing public method is available`, 'error')
+			}
+		}
+	})
 	$('#example').testName('test')
 
 	console.log('------------------------------');
