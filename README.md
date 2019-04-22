@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.3.0
+#### latest version 1.3.1
 
 ## Usage
 
@@ -13,10 +13,10 @@
 
 #### Creating a module
 ``` js
-// clear
+// Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.3.0
+* @ModuleCreator version 1.3.1
 * @module ModuleName
 * @example $.moduleName(object)
 * or
@@ -41,6 +41,7 @@ $.CreateModule({
     publicMethods: {}
 });
 ```
+
 ``` js
 // example with comments
 $.CreateModule({
