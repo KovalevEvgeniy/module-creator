@@ -45,8 +45,29 @@ $(function () {
 	});
 
 	$.CreateModule({
+		name: 'TestParent2',
+		data: {},
+		options: {
+			parentOption_2: true
+		},
+		hooks: {
+			parentHook_2: function () {
+				return true
+			}
+		},
+		privateMethods: {
+			_parentMethod_2: function () {
+				return true
+			},
+			_testExtends_2: function () {
+				return true
+			}
+		}
+	});
+
+	$.CreateModule({
 		name: 'TestName',
-		extends: ['testParent'],
+		extends: ['testParent', 'TestParent2'],
 		data: {},
 		options: {},
 		hooks: {
@@ -136,7 +157,7 @@ $(function () {
 			},
 			_testExtends: function () {
 				console.log('extends:');
-				if (this.options.parentOption) {
+				if (this.options.parentOption && this.options.parentOption_2) {
 					Test.log(`Parent options is available`, 'success')
 				} else {
 					Test.log(`Parent options is not available`, 'error')
@@ -144,18 +165,19 @@ $(function () {
 
 				try {
 					this._parentMethod()
+					this._parentMethod_2()
 					Test.log(`Parent methods is available`, 'success')
 				} catch (err) {
 					Test.log(`Parent methods is not available`, 'error')
 				}
 
-				if (this.hook('parentHook')) {
+				if (this.hook('parentHook') && this.hook('parentHook_2')) {
 					Test.log(`Parent hooks is available`, 'success')
 				} else {
 					Test.log(`Parent hooks is not available`, 'error')
 				}
 
-				if (this.super('_testExtends')) {
+				if (this.super('_testExtends') && this.super('_testExtends_2')) {
 					Test.log(`Parent methods to be called with super`, 'success')
 				} else {
 					Test.log(`Parent methods cannot be called with super`, 'error')
