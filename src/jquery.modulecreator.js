@@ -44,12 +44,15 @@
 					Tools.parents = {}
 					Tools.parent = {}
 					let parentsProps = props.extends.map(function (parentName) {
-						let parentStruct = $[Tools.getLibName(parentName)].struct
+						parentName = Tools.getLibName(parentName)
+						let parentStruct = $[parentName].struct
 						Tools.parents[parentName] = parentStruct.privateMethods
+
 						return parentStruct
 					})
 
 					Tools.parentMethods = Tools.extend({}, ...parentsProps).privateMethods;
+					props.parents = Tools.parents
 					props = Tools.extend({}, ...parentsProps, props);
 				}
 			}
@@ -167,11 +170,17 @@
 					})
 				});
 
+				// console.log(props.parents);
+
 				Tools.extend(inst.__proto__, Tools.parentMethods);
 				Object.defineProperty(inst, "super", {
-					get: () => (function (name, ...args) {
-						if (this.__proto__[name]) {
-							return inst.__proto__[name].apply(this, args);
+					get: () => (function (name, argument, ...args) {
+						if (props.parents[name] !== undefined) {
+							if (props.parents[name][argument]) {
+								return props.parents[name][argument].apply(this, args);
+							}
+						} else if (this.__proto__[name]) {
+							return inst.__proto__[name].apply(this, [argument, ...args]);
 						}
 					})
 				});

@@ -80,11 +80,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             Tools.parents = {};
             Tools.parent = {};
             var parentsProps = props.extends.map(function (parentName) {
-              var parentStruct = $[Tools.getLibName(parentName)].struct;
+              parentName = Tools.getLibName(parentName);
+              var parentStruct = $[parentName].struct;
               Tools.parents[parentName] = parentStruct.privateMethods;
               return parentStruct;
             });
             Tools.parentMethods = Tools.extend.apply(Tools, [{}].concat(_toConsumableArray(parentsProps))).privateMethods;
+            props.parents = Tools.parents;
             props = Tools.extend.apply(Tools, [{}].concat(_toConsumableArray(parentsProps), [props]));
           }
         }
@@ -230,17 +232,22 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               }
             };
           }
-        });
+        }); // console.log(props.parents);
+
         Tools.extend(inst.__proto__, Tools.parentMethods);
         Object.defineProperty(inst, "super", {
           get: function get() {
-            return function (name) {
-              if (this.__proto__[name]) {
-                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                  args[_key2 - 1] = arguments[_key2];
-                }
+            return function (name, argument) {
+              for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+                args[_key2 - 2] = arguments[_key2];
+              }
 
-                return inst.__proto__[name].apply(this, args);
+              if (props.parents[name] !== undefined) {
+                if (props.parents[name][argument]) {
+                  return props.parents[name][argument].apply(this, args);
+                }
+              } else if (this.__proto__[name]) {
+                return inst.__proto__[name].apply(this, [argument].concat(args));
               }
             };
           }
