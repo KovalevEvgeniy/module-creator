@@ -40,17 +40,54 @@ $(function () {
 			},
 			_testExtends: function () {
 				return true
+			},
+			_testHigthLvlExtend: function () {
+				return true
+			},
+			_testHigthLvlSuper: function () {
+				return false
+			},
+			_testExtend: function () {
+				Test.log(`Parent method called for name TestParent`, 'life')
+				return true
+			}
+		}
+	});
+
+	$.CreateModule({
+		name: 'TestParent2',
+		data: {},
+		options: {
+			parentOption_2: true
+		},
+		hooks: {
+			parentHook_2: function () {
+				return true
+			}
+		},
+		privateMethods: {
+			_parentMethod_2: function () {
+				return true
+			},
+			_testExtends_2: function () {
+				return true
+			},
+			_testExtend: function (isSuper) {
+				Test.log(`Parent method called for ${isSuper ? 'super' : 'name'} TestParent2`, 'life')
+				return true
 			}
 		}
 	});
 
 	$.CreateModule({
 		name: 'TestName',
-		extends: ['testParent'],
+		extends: ['testParent', 'testParent2'],
 		data: {},
 		options: {},
 		hooks: {
-			beforeCreate: function () {console.log('%c' + 'Life cycle: beforeCreate', this.options.lifeStyle)},
+			beforeCreate: function () {
+				Test.log(`Life cycle: beforeCreate`, 'life')
+			},
 			create: function () {
 				Test.log(`Life cycle: create`, 'life')
 				this._init()
@@ -131,12 +168,12 @@ $(function () {
 			},
 			_testClick: function (e) {
 				if (e.type === 'click') {
-					console.log('Event: ' + true);
+					Test.log(`Event is available`, 'success')
 				}
 			},
 			_testExtends: function () {
 				console.log('extends:');
-				if (this.options.parentOption) {
+				if (this.options.parentOption && this.options.parentOption_2) {
 					Test.log(`Parent options is available`, 'success')
 				} else {
 					Test.log(`Parent options is not available`, 'error')
@@ -144,22 +181,26 @@ $(function () {
 
 				try {
 					this._parentMethod()
+					this._parentMethod_2()
 					Test.log(`Parent methods is available`, 'success')
 				} catch (err) {
 					Test.log(`Parent methods is not available`, 'error')
 				}
 
-				if (this.hook('parentHook')) {
+				if (this.hook('parentHook') && this.hook('parentHook_2')) {
 					Test.log(`Parent hooks is available`, 'success')
 				} else {
 					Test.log(`Parent hooks is not available`, 'error')
 				}
 
-				if (this.super('_testExtends')) {
+				if (this.super('_testExtends') && this.super('_testExtends_2')) {
 					Test.log(`Parent methods to be called with super`, 'success')
 				} else {
 					Test.log(`Parent methods cannot be called with super`, 'error')
 				}
+			},
+			_testHigthLvlSuper: function () {
+				return true
 			}
 		},
 		publicMethods: {
@@ -182,9 +223,52 @@ $(function () {
 			}
 		}
 	});
+
+	$.CreateModule({
+		name: 'TestChild',
+		extends: ['TestName'],
+		data: {},
+		options: {},
+		hooks: {
+			create: function () {
+				Test.log(`Life cycle: create`, 'life')
+				this._testExtendsChild()
+			},
+			bindEvent: function () {
+				// not parent hook
+			}
+		},
+		privateMethods: {
+			_testExtendsChild: function () {
+				this.super('_testExtend', true)
+
+				if (this.super('testParent', '_testExtend') && this.super('testParent2', '_testExtend')) {
+					Test.log(`Parent hight lvl methods to be called with super`, 'success')
+				} else {
+					Test.log(`Parent hight lvl methods cannot be called with super`, 'error')
+				}
+				return true
+			}
+		},
+		publicMethods: {
+			testExtendsChild: function () {
+				if (this.private._testHigthLvlExtend()) {
+					Test.log(`Parent hight lvl methods is available`, 'success')
+				} else {
+					Test.log(`Parent hight lvl methods are not available`, 'error')
+				}
+			}
+		}
+	});
 });
 
 $(function() {
 	$('#example').testName()
 	$('#example').testName('test')
-})
+
+	console.log('------------------------------');
+	console.log('Children tests:');
+	$('#example').testChild()
+	$('#example').testChild('testExtendsChild')
+});
+
