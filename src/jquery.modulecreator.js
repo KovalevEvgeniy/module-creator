@@ -1,35 +1,132 @@
 ;(function ($) {
 	$.CreateModule = function (props = {}) {
-		const name = props.name;
-		const getLibName = function (name) {
-			return name.substr(0,1).toLowerCase() + name.substr(1);
+		class Tools {
+			static run () {
+				Tools.props = props
+
+				Tools.extendProps()
+				Tools.makeLib()
+			}
+
+			static getLibName (name) {
+				return name.substr(0,1).toLowerCase() + name.substr(1);
+			}
+
+			static makeLib () {
+				$[lib] = $[lib] || ($.fn[lib] = function () {
+					let selector = this;
+					if (typeof selector === 'function') {
+						selector = $[lib].element || $('<div>');
+						$[lib].element = selector;
+					}
+
+					let options = arguments[0];
+					let args = Array.prototype.slice.call(arguments, 1);
+					let result = selector;
+
+					for (let i = 0; i < selector.length; i++) {
+						if (typeof options == 'object' || typeof options == 'undefined') {
+							let inst = new Module(selector[i], options);
+							inst.list[inst.hash] = inst;
+						} else {
+							result = (selector[i][lib][options].apply(selector[i][lib], args) || selector);
+						}
+					}
+
+					return result;
+				});
+
+				$[lib].struct = props
+			}
+
+			static extendProps () {
+				if (props.extends && props.extends.length > 0) {
+					Tools.parents = {}
+					Tools.parent = {}
+					let parentsProps = props.extends.map(function (parentName) {
+						parentName = Tools.getLibName(parentName)
+						let parentStruct = $[parentName].struct
+						Tools.parents[parentName] = parentStruct.privateMethods
+
+						return parentStruct
+					})
+
+					Tools.parentMethods = Tools.extend({}, ...parentsProps).privateMethods;
+					props.parents = Tools.parents
+					props = Tools.extend({}, ...parentsProps, props);
+				}
+			}
+
+			static extend (target = {}, ...objects) {
+				for (let i = 0; i < objects.length; i++) {
+					let obj = objects[i];
+
+					for (let key in obj) {
+						let current = obj[key]
+
+						if (typeof current === 'function') {
+							target[key] = current
+						} else if (Array.isArray(current)) {
+							let tmpArr = current.slice()
+
+							target[key] = tmpArr
+						} else if (typeof current === 'object') {
+							let tmpObj = {}
+
+							if (Array.isArray(target[key])) {
+								tmpObj = Tools.extend({}, current)
+							} else if (typeof target[key] === 'object') {
+								tmpObj = Tools.extend(target[key], current)
+							} else {
+								tmpObj = Tools.extend({}, current)
+							}
+
+							target[key] = tmpObj
+						} else {
+							target[key] = current
+						}
+					}
+				}
+
+				return target
+			}
+
+			static deepCopy (target) {
+				if (typeof target === 'function') {
+					return target
+				} else if (Array.isArray(target)) {
+					let tmpArr = target.slice()
+
+					for (var i = 0; i < tmpArr.length; i++) {
+						tmpArr[i] = Tools.deepCopy(tmpArr[i])
+					}
+
+					return tmpArr
+				} else if (typeof target === 'object') {
+					let tmpObj = Tools.extend({}, target)
+
+					for (let key in tmpObj) {
+						tmpObj[key] = Tools.deepCopy(tmpObj[key])
+					}
+
+					return tmpObj
+				} else {
+					return target
+				}
+			}
 		}
-		const lib = getLibName(name);
+
+		const name = props.name;
+		const lib = Tools.getLibName(name);
 		const list = {};
 		const storage = {};
-		
+
+		Tools.run()
 
 		class Module {
 			constructor(el, options = {}) {
 				const inst = this;
-				let inheritOptipns = {}
-
-				inst.struct = props
-
-				if (props.extends && props.extends.length > 0) {
-					for (let key in props.extends) {
-						let name = props.extends[key]
-						let parentInstans = $[getLibName(name)]();
-						let parentStruct = parentInstans[getLibName(name)]('getStruct');
-
-						// Add the ability to call private parent methods with super
-						inst._extend(inst.__proto__, parentStruct.privateMethods)
-
-						// Updated our properties using the parent struct and save him in struct of the current instance
-						inst.struct = inst._extend({}, parentStruct, props);
-						props = inst.struct;
-					}
-				}
+				let inheritOptipns = {};
 
 				Object.defineProperty(inst, "storage", {
 					get: () => storage,
@@ -72,10 +169,18 @@
 						}
 					})
 				});
+
+				// console.log(props.parents);
+
+				Tools.extend(inst.__proto__, Tools.parentMethods);
 				Object.defineProperty(inst, "super", {
-					get: () => (function (name, ...args) {
-						if (this.__proto__[name]) {
-							return inst.__proto__[name].apply(this, args);
+					get: () => (function (name, argument, ...args) {
+						if (props.parents[name] !== undefined) {
+							if (props.parents[name][argument]) {
+								return props.parents[name][argument].apply(this, args);
+							}
+						} else if (this.__proto__[name]) {
+							return inst.__proto__[name].apply(this, [argument, ...args]);
 						}
 					})
 				});
@@ -151,90 +256,13 @@
 				delete el[lib];
 			}
 
-			_extend (result = {}, ...objects) {
-				for (let i = 0; i < objects.length; i++) {
-					let obj = objects[i];
-
-					for (let key in obj) {
-						let current = obj[key]
-
-						if (typeof current === 'function') {
-							result[key] = current
-						} else if (Array.isArray(current)) {
-							let tmpArr = current.slice()
-
-							result[key] = tmpArr
-						} else if (typeof current === 'object') {
-							let tmpObj = {}
-
-							if (Array.isArray(result[key])) {
-								tmpObj = this._extend({}, current)
-							} else if (typeof result[key] === 'object') {
-								tmpObj = this._extend(result[key], current)
-							} else {
-								tmpObj = this._extend({}, current)
-							}
-
-							result[key] = tmpObj
-						} else {
-							result[key] = current
-						}
-					}
-				}
-
-				return result
+			_extend (target = {}, ...objects) {
+				return Tools.extend(target, ...objects)
 			}
 
 			_deepCopy (target) {
-				if (typeof target === 'function') {
-					return target
-				} else if (Array.isArray(target)) {
-					let tmpArr = target.slice()
-
-					for (var i = 0; i < tmpArr.length; i++) {
-						tmpArr[i] = this._deepCopy(tmpArr[i])
-					}
-
-					return tmpArr
-				} else if (typeof target === 'object') {
-					let tmpObj = this._extend({}, target)
-
-					for (let key in tmpObj) {
-						tmpObj[key] = this._deepCopy(tmpObj[key])
-					}
-
-					return tmpObj
-				} else {
-					return target
-				}
-			}
-
-			_getStruct () {
-				return this._deepCopy(this.struct)
+				return Tools.deepCopy(target)
 			}
 		}
-
-		$[lib] = $[lib] || ($.fn[lib] = function () {
-			let selector = this;
-			if (typeof selector === 'function') {
-				selector = $[lib].element || $('<div>');
-				$[lib].element = selector;
-			}
-
-			let options = arguments[0];
-			let args = Array.prototype.slice.call(arguments, 1);
-			let result = selector;
-
-			for (let i = 0; i < selector.length; i++) {
-				if (typeof options == 'object' || typeof options == 'undefined') {
-					let inst = new Module(selector[i], options);
-					inst.list[inst.hash] = inst;
-				} else {
-					result = (selector[i][lib][options].apply(selector[i][lib], args) || selector);
-				}
-			}
-
-			return result;
-		});
 	}
 })(jQuery);

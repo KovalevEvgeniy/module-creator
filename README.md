@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.3.0
+#### latest version 1.3.1
 
 ## Usage
 
@@ -13,10 +13,10 @@
 
 #### Creating a module
 ``` js
-// clear
+// Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.3.0
+* @ModuleCreator version 1.3.1
 * @module ModuleName
 * @example $.moduleName(object)
 * or
@@ -41,6 +41,7 @@ $.CreateModule({
     publicMethods: {}
 });
 ```
+
 ``` js
 // example with comments
 $.CreateModule({
@@ -248,6 +249,7 @@ $.CreateModule({
         },
         _testMethod: function () {
             console.log('this method not be called');
+            return 'called parent method'
         }
     },
     publicMethods: {}
@@ -270,6 +272,7 @@ $.CreateModule({
         _testMethod: function () {
             console.log('this method to be called');
             console.log(this.options); // {parentOption: true, childrenOption: true, secondOption: false}
+            this.super('_testMethod') // 'called parent method'
         }
     },
     publicMethods: {}
@@ -277,7 +280,59 @@ $.CreateModule({
 
 ```
 
+
+``` js
+// You can inherit your module from multiple parents. If parents have methods with the same name, then `super` will call the method of the last parent in the inheritance chain.
+this.super(parentMethodName[, ...arguments])
+// If you want to specify which parent method to call, you can specify the parent name as the first argument.
+this.super(parentName, parentMethodName[, ...arguments])
+
+// Examples
+$.CreateModule({
+    name: 'ParentModule',
+    // code
+    privateMethods: {
+        _create: function (isReturn) {
+            if (isReturn) {
+                return 'first parent method';
+            }
+        }
+    },
+});
+
+$.CreateModule({
+    name: 'ParentModule2',
+    // code
+    privateMethods: {
+        _create: function () {
+            return 'second parent method';
+        }
+    },
+});
+
+$.CreateModule({
+    name: 'ChildrenModule',
+    extends: ['parentModule', 'parentModule2'],
+    // code
+    privateMethods: {
+        _create: function () {
+            this.super('_create') // 'second parent method'
+
+            this.super('parentModule', '_create', true) // 'first parent method'
+            this.super('parentModule2', '_create') // 'second parent method'
+        }
+    },
+});
+```
+
+
 ### Patch Notes
+#### v 1.3.1
+Extended extend.
+Now you can choose which parent to call the method through `super`
+``` js
+this.super(parentName, parentMethodName[, ...arguments])
+```
 #### v 1.3.0
 You can now inherit from previously created modules. You can now inherit from existing modules.
 ``` js
@@ -288,7 +343,7 @@ $.newModule({
 #### v 1.2.0
 Transferring sources to es6. Added method `super` to call parent methods.
 ``` js
-this.super('_parentMethodName', arg1, arg2);
+this.super(parentMethodName[, ...arguments])
 ```
 #### v 1.1.0
 Added global storage for all instances.
