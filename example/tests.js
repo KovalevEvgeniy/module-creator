@@ -40,6 +40,16 @@ $(function () {
 			},
 			_testExtends: function () {
 				return true
+			},
+			_testHigthLvlExtend: function () {
+				return true
+			},
+			_testHigthLvlSuper: function () {
+				return false
+			},
+			_testExtend: function () {
+				Test.log(`Parent method called for name TestParent`, 'life')
+				return true
 			}
 		}
 	});
@@ -61,17 +71,23 @@ $(function () {
 			},
 			_testExtends_2: function () {
 				return true
+			},
+			_testExtend: function (isSuper) {
+				Test.log(`Parent method called for ${isSuper ? 'super' : 'name'} TestParent2`, 'life')
+				return true
 			}
 		}
 	});
 
 	$.CreateModule({
 		name: 'TestName',
-		extends: ['testParent', 'TestParent2'],
+		extends: ['testParent', 'testParent2'],
 		data: {},
 		options: {},
 		hooks: {
-			beforeCreate: function () {console.log('%c' + 'Life cycle: beforeCreate', this.options.lifeStyle)},
+			beforeCreate: function () {
+				Test.log(`Life cycle: beforeCreate`, 'life')
+			},
 			create: function () {
 				Test.log(`Life cycle: create`, 'life')
 				this._init()
@@ -152,7 +168,7 @@ $(function () {
 			},
 			_testClick: function (e) {
 				if (e.type === 'click') {
-					console.log('Event: ' + true);
+					Test.log(`Event is available`, 'success')
 				}
 			},
 			_testExtends: function () {
@@ -182,6 +198,9 @@ $(function () {
 				} else {
 					Test.log(`Parent methods cannot be called with super`, 'error')
 				}
+			},
+			_testHigthLvlSuper: function () {
+				return true
 			}
 		},
 		publicMethods: {
@@ -204,9 +223,52 @@ $(function () {
 			}
 		}
 	});
+
+	$.CreateModule({
+		name: 'TestChild',
+		extends: ['TestName'],
+		data: {},
+		options: {},
+		hooks: {
+			create: function () {
+				Test.log(`Life cycle: create`, 'life')
+				this._testExtendsChild()
+			},
+			bindEvent: function () {
+				// not parent hook
+			}
+		},
+		privateMethods: {
+			_testExtendsChild: function () {
+				this.super('_testExtend', true)
+
+				if (this.super('testParent', '_testExtend') && this.super('testParent2', '_testExtend')) {
+					Test.log(`Parent hight lvl methods to be called with super`, 'success')
+				} else {
+					Test.log(`Parent hight lvl methods cannot be called with super`, 'error')
+				}
+				return true
+			}
+		},
+		publicMethods: {
+			testExtendsChild: function () {
+				if (this.private._testHigthLvlExtend()) {
+					Test.log(`Parent hight lvl methods is available`, 'success')
+				} else {
+					Test.log(`Parent hight lvl methods are not available`, 'error')
+				}
+			}
+		}
+	});
 });
 
 $(function() {
 	$('#example').testName()
 	$('#example').testName('test')
-})
+
+	console.log('------------------------------');
+	console.log('Children tests:');
+	$('#example').testChild()
+	$('#example').testChild('testExtendsChild')
+});
+
