@@ -1,6 +1,8 @@
 /*
  * CreateModule (jquery.modulecreator.js) 1.3.1 | MIT & BSD
+ * https://github.com/KovalevEvgeniy/ModuleCreator
  */
+
 "use strict";
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
