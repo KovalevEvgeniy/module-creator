@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../dist/jquery.modulecreator.min.js"></script>
+	<script src="popup.js"></script>
+	<script>
+		$(function () {
+			$.popup();
+		});
+	</script>
+</head>
+<body>
+	<main>
+		<button data-popup-open="test">Open</button>
+		<section class="popup" data-popup-id="test">
+			popup content
+			<br>
+			<button data-popup-close="test">Close</button>
+		</section>
+
+			<style>
+				.popup {
+					display: none;
+					position: fixed;
+					left: 50%;
+					top: 50%;
+					margin-top: -60px;
+					margin-left: -100px;
+					padding: 20px;
+					text-align: center;
+					width: 200px;
+					height: 120px;
+					box-shadow: 0 0 20px 0 #000;
+				}
+				.popup.popup-active {
+					display: block;
+				}
+			</style>
+	</main>
+</body>
+</html>
