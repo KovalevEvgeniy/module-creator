@@ -136,6 +136,7 @@ $(function () {
 				this._testEditable('options')
 				this._testExtends()
 				this._testInstanceOptions()
+				this._testGlobalMethods()
 			},
 			_testHook: function () {
 				try {
@@ -234,6 +235,29 @@ $(function () {
 			},
 			_defaultMethod () {
 				Test.log(`Inctance initing private method is not available`, 'success')
+			},
+			_testGlobalMethods () {
+				console.log('Global methods:');
+				// Test extend
+				const obj1 = {b: false, d:false, c: true}
+				const obj2 = this._extend(
+					obj1,
+					{ a: false, b: true},
+					{ a: true, d: true}
+				)
+				if (obj1 === obj2 && obj2.a && obj2.b && obj2.c && obj2.d) {
+					Test.log(`Method "extend" is working!`, 'success')
+				} else {
+					Test.log(`Method "extend" is not working!`, 'error')
+				}
+
+				// Test deepCopy
+				const obj3 = this._deepCopy(obj1)
+				if (typeof obj3 === 'object' && obj3 !== obj1) {
+					Test.log(`Method "deepCopy" is working!`, 'success')
+				} else {
+					Test.log(`Method "deepCopy" is not working!`, 'error')
+				}
 			}
 		},
 		publicMethods: {
@@ -324,5 +348,6 @@ $(function() {
 	console.log('Children tests:');
 	$('#example').testChild()
 	$('#example').testChild('testExtendsChild')
+	$('#example').testChild(12)
 });
 
