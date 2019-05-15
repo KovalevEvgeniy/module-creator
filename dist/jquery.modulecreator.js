@@ -60,13 +60,37 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var options = arguments[0];
             var args = Array.prototype.slice.call(arguments, 1);
             var result = selector;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
-            for (var i = 0; i < selector.length; i++) {
-              if (_typeof(options) == 'object' || typeof options == 'undefined') {
-                var inst = new Module(selector[i], options);
-                inst.list[inst.hash] = inst;
-              } else {
-                result = selector[i][lib][options].apply(selector[i][lib], args) || selector;
+            try {
+              for (var _iterator = selector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var item = _step.value;
+
+                if (_typeof(options) === 'object' || typeof options === 'undefined') {
+                  var inst = new Module(item, options);
+                  inst.list[inst.hash] = inst;
+                } else {
+                  try {
+                    result = item[lib][options].apply(item[lib], args) || selector;
+                  } catch (error) {
+                    throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
+                  }
+                }
+              }
+            } catch (err) {
+              _didIteratorError = true;
+              _iteratorError = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion && _iterator.return != null) {
+                  _iterator.return();
+                }
+              } finally {
+                if (_didIteratorError) {
+                  throw _iteratorError;
+                }
               }
             }
 
@@ -97,35 +121,35 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function extend() {
           var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-          for (var i = 0; i < (arguments.length <= 1 ? 0 : arguments.length - 1); i++) {
-            var obj = i + 1 < 1 || arguments.length <= i + 1 ? undefined : arguments[i + 1];
+          for (var _len = arguments.length, objects = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            objects[_key - 1] = arguments[_key];
+          }
 
+          objects.map(function (obj) {
             for (var key in obj) {
               var current = obj[key];
 
               if (typeof current === 'function') {
                 target[key] = current;
               } else if (Array.isArray(current)) {
-                var tmpArr = current.slice();
-                target[key] = tmpArr;
+                target[key] = Tools.deepCopy(current);
               } else if (_typeof(current) === 'object') {
-                var tmpObj = {};
+                var clonedObject = void 0;
 
                 if (Array.isArray(target[key])) {
-                  tmpObj = Tools.extend({}, current);
+                  clonedObject = Tools.extend({}, current);
                 } else if (_typeof(target[key]) === 'object') {
-                  tmpObj = Tools.extend(target[key], current);
+                  clonedObject = Tools.extend(target[key], current);
                 } else {
-                  tmpObj = Tools.extend({}, current);
+                  clonedObject = Tools.extend({}, current);
                 }
 
-                target[key] = tmpObj;
+                target[key] = clonedObject;
               } else {
                 target[key] = current;
               }
             }
-          }
-
+          });
           return target;
         }
       }, {
@@ -134,28 +158,207 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           if (typeof target === 'function') {
             return target;
           } else if (Array.isArray(target)) {
-            var tmpArr = target.slice();
-
-            for (var i = 0; i < tmpArr.length; i++) {
-              tmpArr[i] = Tools.deepCopy(tmpArr[i]);
-            }
-
-            return tmpArr;
+            return target.map(function (item) {
+              return Tools.deepCopy(item);
+            });
           } else if (_typeof(target) === 'object') {
-            var tmpObj = Tools.extend({}, target);
+            var clonedObject = Tools.extend({}, target);
 
-            for (var key in tmpObj) {
-              tmpObj[key] = Tools.deepCopy(tmpObj[key]);
+            for (var key in clonedObject) {
+              clonedObject[key] = Tools.deepCopy(clonedObject[key]);
             }
 
-            return tmpObj;
+            return clonedObject;
           } else {
             return target;
+          }
+        }
+      }, {
+        key: "haveFunctions",
+        value: function haveFunctions(object) {
+          for (var key in object) {
+            if (typeof object[key] !== 'function') {
+              throw new Error('The "' + key + '" element must be a function');
+            }
           }
         }
       }]);
 
       return Tools;
+    }();
+
+    var Factory =
+    /*#__PURE__*/
+    function () {
+      function Factory(inst, options) {
+        _classCallCheck(this, Factory);
+
+        this.privateMethods = {};
+        this.options = options;
+        this.globalReg(inst);
+        this.setData(inst);
+        this.setOptions(inst);
+        this.addHooks(inst);
+        this.addSuperMethods(inst);
+        this.addPrivateMethods(inst);
+        this.addPublicMethods(inst);
+      }
+
+      _createClass(Factory, [{
+        key: "globalReg",
+        value: function globalReg(inst) {
+          var storages = {
+            storage: storage,
+            list: list
+          };
+
+          var _loop = function _loop(key) {
+            Object.defineProperty(inst, key, {
+              get: function get() {
+                return storages[key];
+              },
+              set: function set(val) {
+                throw new Error('Setting the value to "' + val + '" failed. Object "' + key + '" is not editable');
+              }
+            });
+          };
+
+          for (var key in storages) {
+            _loop(key);
+          }
+        }
+      }, {
+        key: "setData",
+        value: function setData(inst) {
+          var instData = Tools.extend({}, props.data || {}, this.options.data || {});
+          Object.defineProperty(inst, 'data', {
+            get: function get() {
+              return instData;
+            }
+          });
+        }
+      }, {
+        key: "setOptions",
+        value: function setOptions(inst) {
+          var hash = Math.round(new Date() * Math.random());
+          inst.hash = inst.el.hash = hash;
+          var instOptions = Tools.extend({}, props.options || {}, this.options.options || {}, {
+            hash: hash
+          });
+          Object.defineProperty(inst, 'options', {
+            get: function get() {
+              return instOptions;
+            }
+          });
+        }
+      }, {
+        key: "addHooks",
+        value: function addHooks(inst) {
+          var hooks = Tools.extend({}, props.hooks, this.options.hooks);
+          Tools.haveFunctions(hooks);
+          Object.defineProperty(inst, 'hook', {
+            get: function get() {
+              return function (name) {
+                if (!hooks[name]) {
+                  throw new Error('Hook "' + name + '" is not defined in the module');
+                }
+
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                  args[_key2 - 1] = arguments[_key2];
+                }
+
+                return hooks[name].apply(inst, args);
+              };
+            }
+          });
+        }
+      }, {
+        key: "addPrivateMethods",
+        value: function addPrivateMethods(inst) {
+          if (props.privateMethods) {
+            Tools.haveFunctions(props.privateMethods);
+
+            for (var key in props.privateMethods) {
+              if (key[0] !== '_') {
+                throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
+              }
+
+              inst[key] = this.privateMethods[key] = props.privateMethods[key].bind(inst);
+            }
+          }
+        }
+      }, {
+        key: "addPublicMethods",
+        value: function addPublicMethods(inst) {
+          var _this = this;
+
+          inst.el[lib] = {
+            data: inst.data,
+            getStruct: function getStruct() {
+              return inst._getStruct();
+            },
+            destroy: function destroy() {
+              return inst._destroy();
+            }
+          };
+
+          if (props.publicMethods) {
+            Tools.haveFunctions(props.publicMethods);
+
+            for (var key in props.publicMethods) {
+              var publicContext = {};
+              Object.defineProperty(publicContext, 'inst', {
+                get: function get() {
+                  return inst.el[lib];
+                }
+              });
+              Object.defineProperty(publicContext, 'private', {
+                get: function get() {
+                  return _this.privateMethods;
+                },
+                set: function set(val) {
+                  throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+                }
+              });
+              inst.el[lib][key] = props.publicMethods[key].bind(publicContext);
+
+              if (inst[key]) {
+                throw new Error('The ' + key + ' method is already defined in a private scope!');
+              }
+
+              if (key[0] === '_') {
+                throw new Error('The public method should not start with "_". Rename the method ' + key);
+              }
+            }
+          }
+        }
+      }, {
+        key: "addSuperMethods",
+        value: function addSuperMethods(inst, methods) {
+          Tools.extend(inst.__proto__, Tools.parentMethods);
+          Object.defineProperty(inst, 'super', {
+            get: function get() {
+              return function (name, argument) {
+                try {
+                  for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+                    args[_key3 - 2] = arguments[_key3];
+                  }
+
+                  if (_typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
+                    return props.parents[name][argument].apply(this, args);
+                  }
+
+                  return inst.__proto__[name].apply(this, [argument].concat(args));
+                } catch (error) {
+                  throw new Error('Method "' + name + '" is not defined in the parents modules');
+                }
+              };
+            }
+          });
+        }
+      }]);
+
+      return Factory;
     }();
 
     var name = props.name;
@@ -173,138 +376,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         _classCallCheck(this, Module);
 
         var inst = this;
-        var inheritOptipns = {};
-        Object.defineProperty(inst, "storage", {
-          get: function get() {
-            return storage;
-          },
-          set: function set(val) {
-            throw new Error('Setting the value to "' + val + '" failed. Object "storage" is not editable');
-          }
-        });
-        Object.defineProperty(inst, "list", {
-          get: function get() {
-            return list;
-          },
-          set: function set(val) {
-            throw new Error('Setting the value to "' + val + '" failed. Object "list" is not editable');
-          }
-        });
         inst.element = $(el);
 
         if (inst.element.length > 1) {
-          inst.element.each(function (index, el) {
-            new $[name](el, options);
+          inst.element.map(function (el) {
+            return new $[name](el, options);
           });
           return;
         }
 
-        el = inst.element.get(0);
-        inst.hash = el.hash = Math.round(new Date() * Math.random());
-
-        var privateData = inst._extend({}, props.data || {}, options.data || {});
-
-        Object.defineProperty(inst, "data", {
-          get: function get() {
-            return privateData;
-          }
-        });
-
-        var privateOptions = inst._extend({}, props.options || {}, options.options || {}, {
-          hash: inst.hash
-        });
-
-        Object.defineProperty(inst, "options", {
-          get: function get() {
-            return privateOptions;
-          }
-        });
-
-        var hooks = inst._extend({}, props.hooks, options.hooks);
-
-        Object.defineProperty(inst, "hook", {
-          get: function get() {
-            return function (name) {
-              if (hooks[name]) {
-                for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                  args[_key - 1] = arguments[_key];
-                }
-
-                return hooks[name].apply(inst, args);
-              }
-            };
-          }
-        }); // console.log(props.parents);
-
-        Tools.extend(inst.__proto__, Tools.parentMethods);
-        Object.defineProperty(inst, "super", {
-          get: function get() {
-            return function (name, argument) {
-              for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-                args[_key2 - 2] = arguments[_key2];
-              }
-
-              if (props.parents[name] !== undefined) {
-                if (props.parents[name][argument]) {
-                  return props.parents[name][argument].apply(this, args);
-                }
-              } else if (this.__proto__[name]) {
-                return inst.__proto__[name].apply(this, [argument].concat(args));
-              }
-            };
-          }
-        });
+        inst.el = el;
+        new Factory(inst, options);
         inst.hook('beforeCreate');
-        var privateMethods = {};
-
-        if (props.privateMethods) {
-          for (var key in props.privateMethods) {
-            if (key[0] !== '_') {
-              throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
-            }
-
-            inst[key] = privateMethods[key] = props.privateMethods[key].bind(inst);
-          }
-        }
-
-        el[lib] = {
-          data: inst.data,
-          getStruct: function getStruct() {
-            return inst._getStruct();
-          },
-          destroy: function destroy() {
-            inst._destroy();
-          }
-        };
-
-        if (props.publicMethods) {
-          for (var _key3 in props.publicMethods) {
-            var publicContext = {};
-            Object.defineProperty(publicContext, "inst", {
-              get: function get() {
-                return el[lib];
-              }
-            });
-            Object.defineProperty(publicContext, "private", {
-              get: function get() {
-                return privateMethods;
-              },
-              set: function set(val) {
-                throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
-              }
-            });
-            el[lib][_key3] = props.publicMethods[_key3].bind(publicContext);
-
-            if (inst[_key3]) {
-              throw new Error('The ' + _key3 + ' method is already defined in a private scope!');
-            }
-
-            if (_key3[0] === '_') {
-              throw new Error('The public method should not start with "_". Rename the method ' + _key3);
-            }
-          }
-        }
-
         inst.hook('create');
         inst.hook('bindEvent');
         inst.hook('afterCreate');
@@ -328,17 +411,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "_destroy",
         value: function _destroy() {
-          var el = this.element.get(0);
           delete this.list[this.hash];
-          delete el.hash;
-          delete el[lib];
+          delete this.el.hash;
+          delete this.el[lib];
         }
       }, {
         key: "_extend",
         value: function _extend() {
           var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-          for (var _len3 = arguments.length, objects = new Array(_len3 > 1 ? _len3 - 1 : 0), _key4 = 1; _key4 < _len3; _key4++) {
+          for (var _len4 = arguments.length, objects = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
             objects[_key4 - 1] = arguments[_key4];
           }
 
