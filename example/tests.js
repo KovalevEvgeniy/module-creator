@@ -1,5 +1,5 @@
 /**
-* @ModuleCreator version 1.2.0
+* @ModuleCreator version 1.3.1
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -11,13 +11,20 @@ const Test = {
 		error: 'color: #d62020',
 		life: 'color: #777'
 	},
+	getRow () {
+		const errorPath = new Error().stack.split('\n')[3].split(':')
+
+		return errorPath[errorPath.length - 2]
+	},
 	log (message, type) {
+		const row = ' :(' + this.getRow() + ')';
+
 		if (type === 'success') {
-			console.log('%c 🔵 ' + message, this.styles.succes)
+			console.log('%c 🔵 ' + message + row, this.styles.succes)
 		} else if (type === 'error') {
-			console.log('%c 🔴 ' + message, this.styles.error)
+			console.log('%c 🔴 ' + message + row, this.styles.error)
 		} else if (type === 'life') {
-			console.log('%c ⚫️ ' + message, this.styles.life)
+			console.log('%c ⚫️ ' + message + row, this.styles.life)
 		}
 	}
 };
@@ -112,9 +119,6 @@ $(function () {
 		},
 		privateMethods: {
 			_init: function () {
-				if (this.options.exampleOption) {
-					console.log('base initing')
-				}
 				this._tests()
 			},
 			_getEventList: function () {
@@ -348,6 +352,5 @@ $(function() {
 	console.log('Children tests:');
 	$('#example').testChild()
 	$('#example').testChild('testExtendsChild')
-	$('#example').testChild(12)
 });
 
