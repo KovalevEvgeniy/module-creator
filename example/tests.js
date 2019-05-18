@@ -1,8 +1,9 @@
 /**
-* @ModuleCreator version 1.3.1
+* @ModuleCreator version 1.4.0
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
+* https://github.com/KovalevEvgeniy/ModuleCreator
 * @author Kovalev Evgeniy
 **/
 const Test = {
@@ -92,6 +93,18 @@ $(function () {
 		data: {
 			data1: true,
 			data2: false,
+			watchingData: 'old'
+		},
+		watch: {
+			watchingData (oldValue, newValue) {
+				window.watchingData = true
+
+				if (oldValue === 'old' && newValue === 'new') {
+					Test.log(`The observing data method works correctly`, 'success')
+				} else {
+					Test.log(`The observing data method does not work correctly`, 'error')
+				}
+			}
 		},
 		options: {
 			option1: true,
@@ -138,6 +151,7 @@ $(function () {
 				this._testEditable('list')
 				this._testEditable('data')
 				this._testEditable('options')
+				this._testWatchCalls()
 				this._testExtends()
 				this._testInstanceOptions()
 				this._testGlobalMethods()
@@ -176,6 +190,14 @@ $(function () {
 					Test.log(`Object "${name}" properties rewritable`, 'success')
 				} else {
 					Test.log(`Object "${name}" is not properties rewritable`, 'error')
+				}
+			},
+			_testWatchCalls: function () {
+				console.log('watching:');
+				this.data.watchingData = 'new'
+
+				if (window.watchingData !== true) {
+					Test.log(`Data is not watching`, 'error')
 				}
 			},
 			_testClick: function (e) {
@@ -299,7 +321,7 @@ $(function () {
 				this._testExtendsChild()
 			},
 			bindEvent: function () {
-				// not parent hook
+				// clear parent hook
 			}
 		},
 		privateMethods: {
