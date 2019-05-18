@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.3.1
+#### latest version 1.4.0
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.3.1
+* @ModuleCreator version 1.4.0
 * https://github.com/KovalevEvgeniy/ModuleCreator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -188,17 +188,34 @@ Since there is always a hash in namespace, you can quickly remove all handlers a
 $('*').off(this.hash);
 ```
 
-### Options and Data
-`data` and `options` are basically the same. the only difference is the scope.
+### Options
+`data` and `options` are basically the same. The difference is in the scope and the possibility of observation.
 In a private area, you can use them like this:
 ``` js
+// get
 this.options.optionName
 this.data.propName
+// set
+this.options.optionName = 'new options'
+this.data.propName = 'new data'
 ```
 But you can also access the `data` from the public area.
 ``` js
 this.inst.data
 ```
+And you can add methods to the `watch` object. They should be named as `data` properties.
+``` js
+watch: {
+    // ...
+    propName: function (oldValue, newValue) {
+        // this method will be called after the change `data.propName`
+        // and you get the old and new values in the arguments
+    }
+    // ...
+}
+```
+Observer methods will be called only for properties existing in the `data` or in its `data` parents at the time of module creation.
+
 
 ### Custom hook
 In addition to standard hooks, you can add your own. But they will also have to call yourself.
@@ -328,6 +345,12 @@ $.CreateModule({
 
 
 ### Patch Notes
+#### v 1.4,0
+Added watching methods.
+You can add methods to the `watch` object. They should be named as `data` properties.
+``` js
+this.super(parentName, parentMethodName[, ...arguments])
+```
 #### v 1.3.1
 Extended extend.
 Now you can choose which parent to call the method through `super`
