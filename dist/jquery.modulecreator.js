@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.3.1 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.0 | MIT & BSD
  * https://github.com/KovalevEvgeniy/ModuleCreator
  */
 
@@ -187,6 +187,60 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       return Tools;
     }();
 
+    var WatchingData =
+    /*#__PURE__*/
+    function () {
+      function WatchingData(inst, data, watch) {
+        _classCallCheck(this, WatchingData);
+
+        this.inst = inst;
+        this.watch = watch;
+        this.data = {};
+        this.instData = data;
+        this.setData(data);
+      }
+
+      _createClass(WatchingData, [{
+        key: "setData",
+        value: function setData() {
+          var _this = this;
+
+          var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+          for (var _name in data) {
+            this.set(_name, data[_name]);
+          }
+
+          Object.defineProperty(this.inst, 'data', {
+            get: function get() {
+              return _this.instData;
+            }
+          });
+        }
+      }, {
+        key: "set",
+        value: function set(name, value) {
+          var inst = this;
+          var data = inst.inst.data;
+          Object.defineProperty(this.instData, name, {
+            get: function get() {
+              return inst.data[name];
+            },
+            set: function set(newValue) {
+              if (inst.watch && inst.watch[name]) {
+                inst.watch[name](inst.data[name], newValue);
+              }
+
+              inst.data[name] = newValue;
+            }
+          });
+          inst.data[name] = value;
+        }
+      }]);
+
+      return WatchingData;
+    }();
+
     var Factory =
     /*#__PURE__*/
     function () {
@@ -231,11 +285,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "setData",
         value: function setData(inst) {
           var instData = Tools.extend({}, props.data || {}, this.options.data || {});
-          Object.defineProperty(inst, 'data', {
-            get: function get() {
-              return instData;
-            }
-          });
+          var watch = Tools.extend({}, props.watch || {}, this.options.watch || {});
+          Tools.haveFunctions(watch);
+          watchingData = new WatchingData(inst, instData, watch);
         }
       }, {
         key: "setOptions",
@@ -254,7 +306,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addHooks",
         value: function addHooks(inst) {
-          var hooks = Tools.extend({}, props.hooks, this.options.hooks);
+          var hooks = Tools.extend({}, props.hooks || {}, this.options.hooks || {});
           Tools.haveFunctions(hooks);
           Object.defineProperty(inst, 'hook', {
             get: function get() {
@@ -290,7 +342,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addPublicMethods",
         value: function addPublicMethods(inst) {
-          var _this = this;
+          var _this2 = this;
 
           inst.el[lib] = {
             data: inst.data,
@@ -314,7 +366,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               });
               Object.defineProperty(publicContext, 'private', {
                 get: function get() {
-                  return _this.privateMethods;
+                  return _this2.privateMethods;
                 },
                 set: function set(val) {
                   throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
@@ -365,6 +417,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     var lib = Tools.getLibName(name);
     var list = {};
     var storage = {};
+    var watchingData;
     Tools.run();
 
     var Module =
@@ -394,6 +447,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }
 
       _createClass(Module, [{
+        key: "_set",
+        value: function _set(name, value) {
+          watchingData.set(name, value);
+        }
+      }, {
         key: "_getEventList",
         value: function _getEventList() {
           return {
