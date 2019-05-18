@@ -17,6 +17,7 @@
 
 /**
 * @ModuleCreator version 1.3.1
+* https://github.com/KovalevEvgeniy/ModuleCreator
 * @module ModuleName
 * @example $.moduleName(object)
 * or
