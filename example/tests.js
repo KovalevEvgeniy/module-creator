@@ -1,8 +1,9 @@
 /**
-* @ModuleCreator version 1.2.0
+* @ModuleCreator version 1.4.1
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
+* https://github.com/KovalevEvgeniy/ModuleCreator
 * @author Kovalev Evgeniy
 **/
 const Test = {
@@ -11,13 +12,20 @@ const Test = {
 		error: 'color: #d62020',
 		life: 'color: #777'
 	},
+	getRow () {
+		const errorPath = new Error().stack.split('\n')[3].split(':')
+
+		return errorPath[errorPath.length - 2]
+	},
 	log (message, type) {
+		const row = ' :(' + this.getRow() + ')';
+
 		if (type === 'success') {
-			console.log('%c 🔵 ' + message, this.styles.succes)
+			console.log('%c 🔵 ' + message + row, this.styles.succes)
 		} else if (type === 'error') {
-			console.log('%c 🔴 ' + message, this.styles.error)
+			console.log('%c 🔴 ' + message + row, this.styles.error)
 		} else if (type === 'life') {
-			console.log('%c ⚫️ ' + message, this.styles.life)
+			console.log('%c ⚫️ ' + message + row, this.styles.life)
 		}
 	}
 };
@@ -85,6 +93,18 @@ $(function () {
 		data: {
 			data1: true,
 			data2: false,
+			watchingData: 'old'
+		},
+		watch: {
+			watchingData (oldValue, newValue) {
+				window.watchingData = true
+
+				if (oldValue === 'old' && newValue === 'new') {
+					Test.log(`The observing data method works correctly`, 'success')
+				} else {
+					Test.log(`The observing data method does not work correctly`, 'error')
+				}
+			}
 		},
 		options: {
 			option1: true,
@@ -112,9 +132,6 @@ $(function () {
 		},
 		privateMethods: {
 			_init: function () {
-				if (this.options.exampleOption) {
-					console.log('base initing')
-				}
 				this._tests()
 			},
 			_getEventList: function () {
@@ -134,8 +151,10 @@ $(function () {
 				this._testEditable('list')
 				this._testEditable('data')
 				this._testEditable('options')
+				this._testWatchCalls()
 				this._testExtends()
 				this._testInstanceOptions()
+				this._testGlobalMethods()
 			},
 			_testHook: function () {
 				try {
@@ -171,6 +190,30 @@ $(function () {
 					Test.log(`Object "${name}" properties rewritable`, 'success')
 				} else {
 					Test.log(`Object "${name}" is not properties rewritable`, 'error')
+				}
+			},
+			_testWatchCalls: function () {
+				console.log('watching:');
+				this.data.watchingData = 'new'
+
+				if (window.watchingData !== true) {
+					Test.log(`Data is not watching`, 'error')
+				}
+
+				this._set('newWatchingData', 'old', function (oldValue, newValue) {
+					window.newWatchingData = true
+
+					if (oldValue === 'old' && newValue === 'newest') {
+						Test.log(`The observing new data method works correctly`, 'success')
+					} else {
+						Test.log(`The observing new data method does not work correctly`, 'error')
+					}
+				})
+
+				this.data.newWatchingData = 'newest'
+
+				if (window.newWatchingData !== true) {
+					Test.log(`New data is not watching`, 'error')
 				}
 			},
 			_testClick: function (e) {
@@ -234,6 +277,29 @@ $(function () {
 			},
 			_defaultMethod () {
 				Test.log(`Inctance initing private method is not available`, 'success')
+			},
+			_testGlobalMethods () {
+				console.log('Global methods:');
+				// Test extend
+				const obj1 = {b: false, d:false, c: true}
+				const obj2 = this._extend(
+					obj1,
+					{ a: false, b: true},
+					{ a: true, d: true}
+				)
+				if (obj1 === obj2 && obj2.a && obj2.b && obj2.c && obj2.d) {
+					Test.log(`Method "extend" is working!`, 'success')
+				} else {
+					Test.log(`Method "extend" is not working!`, 'error')
+				}
+
+				// Test deepCopy
+				const obj3 = this._deepCopy(obj1)
+				if (typeof obj3 === 'object' && obj3 !== obj1) {
+					Test.log(`Method "deepCopy" is working!`, 'success')
+				} else {
+					Test.log(`Method "deepCopy" is not working!`, 'error')
+				}
 			}
 		},
 		publicMethods: {
@@ -271,7 +337,7 @@ $(function () {
 				this._testExtendsChild()
 			},
 			bindEvent: function () {
-				// not parent hook
+				// clear parent hook
 			}
 		},
 		privateMethods: {
