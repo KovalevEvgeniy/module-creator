@@ -1,5 +1,5 @@
 /**
-* @ModuleCreator version 1.4.0
+* @ModuleCreator version 1.4.1
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -198,6 +198,22 @@ $(function () {
 
 				if (window.watchingData !== true) {
 					Test.log(`Data is not watching`, 'error')
+				}
+
+				this._set('newWatchingData', 'old', function (oldValue, newValue) {
+					window.newWatchingData = true
+
+					if (oldValue === 'old' && newValue === 'newest') {
+						Test.log(`The observing new data method works correctly`, 'success')
+					} else {
+						Test.log(`The observing new data method does not work correctly`, 'error')
+					}
+				})
+
+				this.data.newWatchingData = 'newest'
+
+				if (window.newWatchingData !== true) {
+					Test.log(`New data is not watching`, 'error')
 				}
 			},
 			_testClick: function (e) {

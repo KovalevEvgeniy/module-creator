@@ -129,8 +129,10 @@
 			}
 
 			setData (data = {}) {
+				const inst = this;
+
 				for (let name in data) {
-					this.set(name, data[name]);
+					this.set(name, data[name], inst.watch[name]);
 				}
 
 				Object.defineProperty(this.inst, 'data', {
@@ -138,7 +140,7 @@
 				});
 			}
 
-			set (name, value) {
+			set (name, value, callback = function () {}) {
 				const inst = this;
 				const data = inst.inst.data;
 
@@ -147,8 +149,8 @@
 						return inst.data[name];
 					},
 					set (newValue) {
-						if (inst.watch && inst.watch[name]) {
-							inst.watch[name](inst.data[name], newValue);
+						if (callback && typeof callback === 'function') {
+							callback(inst.data[name], newValue);
 						}
 						inst.data[name] = newValue;
 					}
@@ -313,8 +315,8 @@
 				inst.hook('afterCreate');
 			}
 
-			_set (name, value) {
-				watchingData.set(name, value);
+			_set (name, value, callback) {
+				watchingData.set(name, value, callback);
 			}
 
 			_getEventList () {

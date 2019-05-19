@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.0
+#### latest version 1.4.1
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.0
+* @ModuleCreator version 1.4.1
 * https://github.com/KovalevEvgeniy/ModuleCreator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -104,6 +104,7 @@ $(function () {
 });
 ```
 
+
 ## Documentation
 ### Methods
 You can call public methods on an instance from an element
@@ -119,11 +120,12 @@ You can access private methods from the `this.private` object
 this.private._examplePrivateMethod(arg1, arg2);
 ```
 
+
 ### Parent methods
 Several methods already exist by default, but of course you can override them.
 
+Wrapper method for adding event listeners. You can read more about its use in the Bindings block.
 ``` js
-// Wrapper method for adding event listeners. You can read more about its use in the Bindings block.
 inst._getEventList()
 ```
 ``` js
@@ -133,13 +135,13 @@ inst._getEventName()
 inst._destroy()
 ```
 
+This method works just like `Object.assign` or `$.extend`, but does it deeply. Note that internal functions still do not lose context, call them via `call` or `apply`.
 ``` js
-// This method works just like `Object.assign` or `$.extend`, but does it deeply. Note that internal functions still do not lose context, call them via `call` or `apply`.
 inst._extend({}, obj1, obj2)
 ```
 
+This method returns a deep copy of the argument.
 ``` js
-// This method returns a deep copy of the argument.
 inst._deepCopy()
 ```
 
@@ -149,6 +151,7 @@ this.super('_destroy');
 this.super('_getEventList');
 this.super('_parentMethodName', arg1, arg2);
 ```
+
 
 ### Bindings
 The `bindEvent` hook is called after the instance is created. This allows you to bind an event handler.
@@ -188,7 +191,8 @@ Since there is always a hash in namespace, you can quickly remove all handlers a
 $('*').off(this.hash);
 ```
 
-### Options
+
+### Options and data
 `data` and `options` are basically the same. The difference is in the scope and the possibility of observation.
 In a private area, you can use them like this:
 ``` js
@@ -215,6 +219,24 @@ watch: {
 }
 ```
 Observer methods will be called only for properties existing in the `data` or in its `data` parents at the time of module creation.
+
+If you want to add the observed property dynamically, you need to use the `_set` method:
+``` js
+// syntax:
+this._set(propName, propValue[, ...callback])
+
+// example:
+this._set('propsName', 'propsValue', function (oldValue, newValue) {
+    // Observer callback
+})
+```
+
+
+### Storage
+Storage is also very similar to the options. The only difference is that different instances of the same class have access to the same storage.
+``` js
+this.storage // object
+```
 
 
 ### Custom hook
@@ -247,6 +269,7 @@ You can call them only in private methods.
 ``` js
 this.hook('customHook', arg1, arg2);
 ```
+
 
 ### Extends
 You can now inherit from previously created modules. You can now inherit from existing modules. Just add their names to the `extends` field as an array.
@@ -295,17 +318,19 @@ $.CreateModule({
     },
     publicMethods: {}
 });
-
 ```
 
+You can inherit your module from multiple parents. If parents have methods with the same name, then `super` will call the method of the last parent in the inheritance chain.
+``` js
+this.super(parentMethodName[, ...arguments])
+```
+// If you want to specify which parent method to call, you can specify the parent name as the first argument.
+``` js
+this.super(parentName, parentMethodName[, ...arguments])
+```
 
 ``` js
-// You can inherit your module from multiple parents. If parents have methods with the same name, then `super` will call the method of the last parent in the inheritance chain.
-this.super(parentMethodName[, ...arguments])
-// If you want to specify which parent method to call, you can specify the parent name as the first argument.
-this.super(parentName, parentMethodName[, ...arguments])
-
-// Examples
+// Examples:
 $.CreateModule({
     name: 'ParentModule',
     // code
@@ -345,34 +370,26 @@ $.CreateModule({
 
 
 ### Patch Notes
-#### v 1.4,0
+#### v 1.4.1
+Add method `_set`
+
+#### v 1.4.0
 Added watching methods.
 You can add methods to the `watch` object. They should be named as `data` properties.
-``` js
-this.super(parentName, parentMethodName[, ...arguments])
-```
+
 #### v 1.3.1
-Extended extend.
-Now you can choose which parent to call the method through `super`
-``` js
-this.super(parentName, parentMethodName[, ...arguments])
-```
+Extended extend!
+Now you can choose which parent to call the method through `super`.
+And added methods `_extend` and `_deepCopy`
+
 #### v 1.3.0
-You can now inherit from previously created modules. You can now inherit from existing modules.
-``` js
-$.newModule({
-    exends: ['parentModule']
-})
-```
+You can now inherit from existing modules using the `extends` property.
+
 #### v 1.2.0
 Transferring sources to es6. Added method `super` to call parent methods.
-``` js
-this.super(parentMethodName[, ...arguments])
-```
+
 #### v 1.1.0
 Added global storage for all instances.
-``` js
-this.storage // object
-```
+
 #### v 1.0.0
 Release.

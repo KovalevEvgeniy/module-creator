@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.0 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.1 | MIT & BSD
  * https://github.com/KovalevEvgeniy/ModuleCreator
  */
 
@@ -206,9 +206,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var _this = this;
 
           var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+          var inst = this;
 
           for (var _name in data) {
-            this.set(_name, data[_name]);
+            this.set(_name, data[_name], inst.watch[_name]);
           }
 
           Object.defineProperty(this.inst, 'data', {
@@ -220,6 +221,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "set",
         value: function set(name, value) {
+          var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
           var inst = this;
           var data = inst.inst.data;
           Object.defineProperty(this.instData, name, {
@@ -227,8 +229,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               return inst.data[name];
             },
             set: function set(newValue) {
-              if (inst.watch && inst.watch[name]) {
-                inst.watch[name](inst.data[name], newValue);
+              if (callback && typeof callback === 'function') {
+                callback(inst.data[name], newValue);
               }
 
               inst.data[name] = newValue;
@@ -448,8 +450,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       _createClass(Module, [{
         key: "_set",
-        value: function _set(name, value) {
-          watchingData.set(name, value);
+        value: function _set(name, value, callback) {
+          watchingData.set(name, value, callback);
         }
       }, {
         key: "_getEventList",
