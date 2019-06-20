@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.3.1 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.2 | MIT & BSD
  * https://github.com/KovalevEvgeniy/ModuleCreator
  */
 
@@ -72,9 +72,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   var inst = new Module(item, options);
                   inst.list[inst.hash] = inst;
                 } else {
-                  try {
+                  if (item[lib][options] && typeof item[lib][options] === 'function') {
                     result = item[lib][options].apply(item[lib], args) || selector;
-                  } catch (error) {
+                  } else {
                     throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
                   }
                 }
@@ -254,7 +254,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addHooks",
         value: function addHooks(inst) {
-          var hooks = Tools.extend({}, props.hooks, this.options.hooks);
+          var hooks = Tools.extend({
+            beforeCreate: function beforeCreate() {},
+            bindEvent: function bindEvent() {},
+            afterCreate: function afterCreate() {}
+          }, props.hooks || {}, this.options.hooks || {});
           Tools.haveFunctions(hooks);
           Object.defineProperty(inst, 'hook', {
             get: function get() {
@@ -344,7 +348,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     args[_key3 - 2] = arguments[_key3];
                   }
 
-                  if (_typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
+                  if (props.parents && _typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
                     return props.parents[name][argument].apply(this, args);
                   }
 
@@ -398,8 +402,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function _getEventList() {
           return {
             'click': 'touchstart',
+            'mouseenter': 'touchstart',
             'mousedown': 'touchstart',
-            'mouseup': 'touchend'
+            'mouseup': 'touchend',
+            'mouseleave': 'touchend'
           };
         }
       }, {

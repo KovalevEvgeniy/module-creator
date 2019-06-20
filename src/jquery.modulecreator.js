@@ -29,9 +29,9 @@
 							const inst = new Module(item, options);
 							inst.list[inst.hash] = inst;
 						} else {
-							try {
+							if (item[lib][options] && typeof item[lib][options] === 'function') {
 								result = (item[lib][options].apply(item[lib], args) || selector);
-							} catch (error) {
+							} else {
 								throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
 							}
 						}
@@ -167,7 +167,12 @@
 			}
 
 			addHooks (inst) {
-				const hooks = Tools.extend({}, props.hooks, this.options.hooks);
+				const hooks = Tools.extend({
+					beforeCreate: function () {},
+					bindEvent: function () {},
+					afterCreate: function () {}
+				}, (props.hooks || {}), (this.options.hooks || {}));
+
 				Tools.haveFunctions(hooks);
 
 				Object.defineProperty(inst, 'hook', {
@@ -233,7 +238,7 @@
 				Object.defineProperty(inst, 'super', {
 					get: () => (function (name, argument, ...args) {
 						try {
-							if (typeof props.parents[name] === 'object' && props.parents[name][argument]) {
+							if (props.parents && typeof props.parents[name] === 'object' && props.parents[name][argument]) {
 								return props.parents[name][argument].apply(this, args);
 							}
 							return inst.__proto__[name].apply(this, [argument, ...args]);
@@ -276,8 +281,10 @@
 			_getEventList () {
 				return {
 					'click': 'touchstart',
+					'mouseenter': 'touchstart',
 					'mousedown': 'touchstart',
-					'mouseup': 'touchend'
+					'mouseup': 'touchend',
+					'mouseleave': 'touchend'
 				}
 			}
 
