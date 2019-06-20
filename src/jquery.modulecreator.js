@@ -118,6 +118,48 @@
 			}
 		}
 
+		class WatchingData {
+			constructor (inst, data, watch) {
+				this.inst = inst;
+				this.watch = watch;
+				this.data = {};
+				this.instData = data;
+
+				this.setData(data);
+			}
+
+			setData (data = {}) {
+				const inst = this;
+
+				for (let name in data) {
+					this.set(name, data[name], inst.watch[name]);
+				}
+
+				Object.defineProperty(this.inst, 'data', {
+					get: () => this.instData
+				});
+			}
+
+			set (name, value, callback = function () {}) {
+				const inst = this;
+				const data = inst.inst.data;
+
+				Object.defineProperty(this.instData, name, {
+					get: () => {
+						return inst.data[name];
+					},
+					set (newValue) {
+						if (callback && typeof callback === 'function') {
+							callback(inst.data[name], newValue);
+						}
+						inst.data[name] = newValue;
+					}
+				});
+
+				inst.data[name] = value;
+			}
+		}
+
 		class Factory {
 			constructor (inst, options) {
 				this.privateMethods = {};
@@ -149,10 +191,10 @@
 
 			setData (inst) {
 				const instData = Tools.extend({}, (props.data || {}), (this.options.data || {}));
+				const watch = Tools.extend({}, (props.watch || {}), (this.options.watch || {}));
+				Tools.haveFunctions(watch);
 
-				Object.defineProperty(inst, 'data', {
-					get: () => instData
-				});
+				watchingData = new WatchingData(inst, instData, watch);
 			}
 
 			setOptions (inst) {
@@ -254,7 +296,7 @@
 		const lib = Tools.getLibName(name);
 		const list = {};
 		const storage = {};
-
+		let watchingData;
 		Tools.run();
 
 		class Module {
@@ -276,6 +318,10 @@
 				inst.hook('create');
 				inst.hook('bindEvent');
 				inst.hook('afterCreate');
+			}
+
+			_set (name, value, callback) {
+				watchingData.set(name, value, callback);
 			}
 
 			_getEventList () {
