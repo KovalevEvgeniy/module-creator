@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.1 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.2 | MIT & BSD
  * https://github.com/KovalevEvgeniy/ModuleCreator
  */
 
@@ -72,9 +72,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   var inst = new Module(item, options);
                   inst.list[inst.hash] = inst;
                 } else {
-                  try {
+                  if (item[lib][options] && typeof item[lib][options] === 'function') {
                     result = item[lib][options].apply(item[lib], args) || selector;
-                  } catch (error) {
+                  } else {
                     throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
                   }
                 }
@@ -187,62 +187,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       return Tools;
     }();
 
-    var WatchingData =
-    /*#__PURE__*/
-    function () {
-      function WatchingData(inst, data, watch) {
-        _classCallCheck(this, WatchingData);
-
-        this.inst = inst;
-        this.watch = watch;
-        this.data = {};
-        this.instData = data;
-        this.setData(data);
-      }
-
-      _createClass(WatchingData, [{
-        key: "setData",
-        value: function setData() {
-          var _this = this;
-
-          var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-          var inst = this;
-
-          for (var _name in data) {
-            this.set(_name, data[_name], inst.watch[_name]);
-          }
-
-          Object.defineProperty(this.inst, 'data', {
-            get: function get() {
-              return _this.instData;
-            }
-          });
-        }
-      }, {
-        key: "set",
-        value: function set(name, value) {
-          var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-          var inst = this;
-          var data = inst.inst.data;
-          Object.defineProperty(this.instData, name, {
-            get: function get() {
-              return inst.data[name];
-            },
-            set: function set(newValue) {
-              if (callback && typeof callback === 'function') {
-                callback(inst.data[name], newValue);
-              }
-
-              inst.data[name] = newValue;
-            }
-          });
-          inst.data[name] = value;
-        }
-      }]);
-
-      return WatchingData;
-    }();
-
     var Factory =
     /*#__PURE__*/
     function () {
@@ -287,9 +231,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "setData",
         value: function setData(inst) {
           var instData = Tools.extend({}, props.data || {}, this.options.data || {});
-          var watch = Tools.extend({}, props.watch || {}, this.options.watch || {});
-          Tools.haveFunctions(watch);
-          watchingData = new WatchingData(inst, instData, watch);
+          Object.defineProperty(inst, 'data', {
+            get: function get() {
+              return instData;
+            }
+          });
         }
       }, {
         key: "setOptions",
@@ -308,7 +254,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addHooks",
         value: function addHooks(inst) {
-          var hooks = Tools.extend({}, props.hooks || {}, this.options.hooks || {});
+          var hooks = Tools.extend({
+            beforeCreate: function beforeCreate() {},
+            bindEvent: function bindEvent() {},
+            afterCreate: function afterCreate() {}
+          }, props.hooks || {}, this.options.hooks || {});
           Tools.haveFunctions(hooks);
           Object.defineProperty(inst, 'hook', {
             get: function get() {
@@ -344,7 +294,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "addPublicMethods",
         value: function addPublicMethods(inst) {
-          var _this2 = this;
+          var _this = this;
 
           inst.el[lib] = {
             data: inst.data,
@@ -368,7 +318,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               });
               Object.defineProperty(publicContext, 'private', {
                 get: function get() {
-                  return _this2.privateMethods;
+                  return _this.privateMethods;
                 },
                 set: function set(val) {
                   throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
@@ -398,7 +348,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     args[_key3 - 2] = arguments[_key3];
                   }
 
-                  if (_typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
+                  if (props.parents && _typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
                     return props.parents[name][argument].apply(this, args);
                   }
 
@@ -419,7 +369,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     var lib = Tools.getLibName(name);
     var list = {};
     var storage = {};
-    var watchingData;
     Tools.run();
 
     var Module =
@@ -449,17 +398,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }
 
       _createClass(Module, [{
-        key: "_set",
-        value: function _set(name, value, callback) {
-          watchingData.set(name, value, callback);
-        }
-      }, {
         key: "_getEventList",
         value: function _getEventList() {
           return {
             'click': 'touchstart',
+            'mouseenter': 'touchstart',
             'mousedown': 'touchstart',
-            'mouseup': 'touchend'
+            'mouseup': 'touchend',
+            'mouseleave': 'touchend'
           };
         }
       }, {
