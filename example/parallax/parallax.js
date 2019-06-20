@@ -31,23 +31,34 @@ $.CreateModule({
     hooks: {
         beforeCreate: function () {},
         create: function () {
-            this._create();
+            this._init();
         },
         bindEvent: function () {
-            $(document).on('scroll', this._onScroll)
-            $(document).on('mousemove', this._onMousemove)
+            if (this.options.scrollParallax) {
+                $(document).on('scroll.' + this.hash, this._onScroll)
+            }
+
+            if (this.options.cursorParallaxX || this.options.cursorParallaxY) {
+                $(document).on('mousemove.' + this.hash, this._onMousemove)
+            }
+
+            $(document).on('resize.' + this.hash, this._onResize)
         },
         afterCreate: function () {}
     },
     privateMethods: {
-        _create: function () {
+        _init: function () {
+            this.element.addClass('is-parallax');
             this._setCursorPosition(($(window).width() / 2), ($(window).height() / 2));
-            this.baseY = Number(this.element.offset().top) - Number(this.element.position().top);
+            this.baseLine = Number(this.element.offset().top) - Number(this.element.position().top);
 
             this._updatePosition();
         },
         _onScroll: function (event) {
             this._updatePosition()
+        },
+        _onResize: function (event) {
+            this._destroy()
         },
         _setCursorPosition: function (x, y) {
             this.cursorPosition = {
@@ -60,18 +71,18 @@ $.CreateModule({
             this._updatePosition();
         },
         _updatePosition: function () {
-            var shift = {
+            var pos = {
                 x: (this._getCursorDependencyX()),
                 y: (this._getScrollDependency() + this._getCursorDependencyY())
             };
 
             this.element.css({
-                transform: `translate(${shift.x}px, ${shift.y}px)`
+                transform: `translate(${pos.x}px, ${pos.y}px)`
             });
         },
         _getScrollDependency: function () {
             if (this.options.scrollParallax) {
-                var currY = this.baseY - $(document).scrollTop();
+                var currY = this.baseLine - $(document).scrollTop();
                 var dy = currY * this.options.scrollCoefficient;
 
                 return dy;
@@ -95,6 +106,17 @@ $.CreateModule({
 
             return 0;
         },
+        _destroy: function () {
+            $(document).off('scroll.' + this.hash +' mousemove.' + this.hash + ' resize.' + this.hash);
+
+            this.element.removeClass('is-parallax');
+            this.element.removeAttr('style');
+            this.super('_destroy');
+        }
     },
-    publicMethods: {}
+    publicMethods: {
+        destroy: function () {
+            this.private._destroy()
+        }
+    }
 });
