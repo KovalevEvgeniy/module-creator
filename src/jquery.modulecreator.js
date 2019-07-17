@@ -214,7 +214,6 @@
 					bindEvent: function () {},
 					afterCreate: function () {}
 				}, (props.hooks || {}), (this.options.hooks || {}));
-
 				Tools.haveFunctions(hooks);
 
 				Object.defineProperty(inst, 'hook', {
