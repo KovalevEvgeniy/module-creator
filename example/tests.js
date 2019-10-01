@@ -1,10 +1,10 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.1
+* @ModuleCreator version 1.4.3
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
-* https://github.com/KovalevEvgeniy/ModuleCreator
+* https://github.com/KovalevEvgeniy/module-creator
 * @author Kovalev Evgeniy
 **/
 const Test = {
