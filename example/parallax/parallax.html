@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<script src="../../lib/jquery.min.js"></script>
+	<!-- <script src="../../src/jquery.modulecreator.js"></script> -->
+	<script src="../../dist/jquery.modulecreator.min.js"></script>
+	<script src="parallax.js"></script>
+	<script>
+		$(function() {
+			$('.js-scroll-element.elem_1').parallax({
+				options: {
+					scrollCoefficient: -.8
+				}
+			})
+			$('.js-scroll-element.elem_2').parallax({
+				options: {
+					scrollCoefficient: .8
+				}
+			})
+			$('.js-scroll-element.elem_3').parallax({
+				options: {
+					scrollCoefficient: .2
+				}
+			})
+
+
+			$('.js-mouse-element.elem_1').parallax({
+				options: {
+					cursorParallaxX: true,
+					cursorParallaxY: true,
+					scrollParallax: false,
+					cursorCoefficientX: .02,
+					cursorCoefficientY: .02,
+				}
+			})
+			$('.js-mouse-element.elem_2').parallax({
+				options: {
+					cursorParallaxX: true,
+					cursorParallaxY: true,
+					scrollParallax: false,
+					cursorCoefficientX: -.1,
+					cursorCoefficientY: .1,
+				}
+			})
+			$('.js-mouse-element.elem_3').parallax({
+				options: {
+					cursorParallaxX: true,
+					cursorParallaxY: true,
+					scrollParallax: false,
+					cursorCoefficientX: .05,
+					cursorCoefficientY: -.05,
+				}
+			})
+
+			$('.js-scroll-mouse-element').parallax({
+				options: {
+					cursorParallaxX: true,
+					cursorParallaxY: true,
+					scrollCoefficient: 1,
+					cursorCoefficientX: -.2,
+					cursorCoefficientY: -.2,
+				}
+			})
+
+		})
+	</script>
+</head>
+<body>
+	<main>
+		<div class="block">
+			<div class="elem elem_1 js-scroll-element">1</div>
+			<div class="elem elem_2 js-scroll-element">2</div>
+			<div class="elem elem_3 js-scroll-element">3</div>
+		</div>
+		<div class="block">
+			<div class="elem elem_1 js-mouse-element">1</div>
+			<div class="elem elem_2 js-mouse-element">2</div>
+			<div class="elem elem_3 js-mouse-element">3</div>
+		</div>
+		<div class="block">
+			<div class="elem elem_1 js-scroll-element">1</div>
+			<div class="elem elem_2 js-scroll-element">2</div>
+			<div class="elem elem_3 js-scroll-element">3</div>
+		</div>
+		<div class="block">
+			<div class="elem elem_1 js-scroll-mouse-element">1</div>
+			<div class="elem elem_2 js-scroll-mouse-element">2</div>
+			<div class="elem elem_3 js-scroll-mouse-element">3</div>
+		</div>
+	</main>
+
+	<style>
+		.block {
+			height: 100vh;
+			background: #eee;
+			border: 1px solid #333;
+			position: relative;
+			overflow: hidden;
+		}
+		.elem {
+			display: block;
+			position: absolute;
+			width: 100px;
+			height: 100px;
+			background: #aaa;
+			font-size: 40px;
+			line-height: 100px;
+			text-align: center;
+			color: #fff;
+		}
+		.elem_1 {
+			top: 100px;
+			left: 200px;
+			background: #c16d6d;
+		}
+		.elem_2 {
+			top: 600px;
+			left: 600px;
+			background: #637dc5;
+		}
+		.elem_3 {
+			top: 350px;
+			left: 1000px;
+			background: #378a45;
+		}
+	</style>
+</body>
+</html>

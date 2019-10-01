@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.2
+#### latest version 1.4.3
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.2
+* @ModuleCreator version 1.4.3
 * https://github.com/KovalevEvgeniy/ModuleCreator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -143,6 +143,11 @@ inst._extend({}, obj1, obj2)
 This method returns a deep copy of the argument.
 ``` js
 inst._deepCopy()
+```
+
+This method returns `true` or `false` if you use mobile agent or not.
+``` js
+inst._isMobile()
 ```
 
 You can call the parent method in a private area as follows:

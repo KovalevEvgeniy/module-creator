@@ -214,7 +214,6 @@
 					bindEvent: function () {},
 					afterCreate: function () {}
 				}, (props.hooks || {}), (this.options.hooks || {}));
-
 				Tools.haveFunctions(hooks);
 
 				Object.defineProperty(inst, 'hook', {
@@ -336,7 +335,16 @@
 
 			_getEventName (eventName, namespace) {
 				namespace = (namespace ? '.' + namespace : '') + '.' + this.hash;
-				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? (this._getEventList()[eventName] || eventName) + namespace : eventName + namespace);
+
+				if (this._isMobile()) {
+					return ((this._getEventList()[eventName] || eventName) + namespace);
+				} else {
+					return (eventName + namespace);
+				}
+			}
+
+			_isMobile () {
+				return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 			}
 
 			_destroy () {
