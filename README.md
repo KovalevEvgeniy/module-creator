@@ -145,6 +145,11 @@ This method returns a deep copy of the argument.
 inst._deepCopy()
 ```
 
+This method returns `true` or `false` if you use mobile agent or not.
+``` js
+inst._isMobile()
+```
+
 You can call the parent method in a private area as follows:
 ``` js
 this.super('_destroy');
