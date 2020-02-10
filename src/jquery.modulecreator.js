@@ -13,7 +13,9 @@
 			}
 
 			static makeLib () {
-				$[lib] = $[lib] || ($.fn[lib] = function () {
+				$.fn = $.fn || {};
+
+				$[lib] = $[lib] ? $[lib] : ($.fn[lib] = function () {
 					let selector = this;
 					if (typeof selector === 'function') {
 						selector = $[lib].element || $('<div>');
@@ -24,7 +26,9 @@
 					const args = Array.prototype.slice.call(arguments, 1);
 					let result = selector;
 
-					for (let item of selector) {
+					for (let i = 0; i < selector.length; i++) {
+						let item = selector[i];
+
 						if (typeof options === 'object' || typeof options === 'undefined') {
 							const inst = new Module(item, options);
 							inst.list[inst.hash] = inst;

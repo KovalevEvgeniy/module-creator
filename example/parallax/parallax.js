@@ -1,6 +1,6 @@
 /**
 * @ModuleCreator version 1.4.1
-* https://github.com/KovalevEvgeniy/ModuleCreator
+* https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
 * or

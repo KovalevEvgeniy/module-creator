@@ -1,6 +1,6 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.3 | MIT & BSD
- * https://github.com/KovalevEvgeniy/ModuleCreator
+ * CreateModule (jquery.modulecreator.js) 1.4.4 | MIT & BSD
+ * https://github.com/KovalevEvgeniy/module-creator
  */
 
 "use strict";
@@ -49,7 +49,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "makeLib",
         value: function makeLib() {
-          $[lib] = $[lib] || ($.fn[lib] = function () {
+          $.fn = $.fn || {};
+          $[lib] = $[lib] ? $[lib] : $.fn[lib] = function () {
             var selector = this;
 
             if (typeof selector === 'function') {
@@ -60,43 +61,24 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var options = arguments[0];
             var args = Array.prototype.slice.call(arguments, 1);
             var result = selector;
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
 
-            try {
-              for (var _iterator = selector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var item = _step.value;
+            for (var i = 0; i < selector.length; i++) {
+              var item = selector[i];
 
-                if (_typeof(options) === 'object' || typeof options === 'undefined') {
-                  var inst = new Module(item, options);
-                  inst.list[inst.hash] = inst;
+              if (_typeof(options) === 'object' || typeof options === 'undefined') {
+                var inst = new Module(item, options);
+                inst.list[inst.hash] = inst;
+              } else {
+                if (item[lib][options] && typeof item[lib][options] === 'function') {
+                  result = item[lib][options].apply(item[lib], args) || selector;
                 } else {
-                  if (item[lib][options] && typeof item[lib][options] === 'function') {
-                    result = item[lib][options].apply(item[lib], args) || selector;
-                  } else {
-                    throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
-                  }
-                }
-              }
-            } catch (err) {
-              _didIteratorError = true;
-              _iteratorError = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion && _iterator.return != null) {
-                  _iterator.return();
-                }
-              } finally {
-                if (_didIteratorError) {
-                  throw _iteratorError;
+                  throw new Error('Method "' + options + '" is not defined in the "' + lib + '" module');
                 }
               }
             }
 
             return result;
-          });
-
+          };
           $[lib].struct = props;
         }
       }, {

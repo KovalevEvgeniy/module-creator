@@ -11,17 +11,19 @@
 	<script>
 		$(function() {
 			$('.select').autoSuggest()
-			$('.select2').autoSuggest({
-				hooks: {
-					customHook: function (a, b) {}
-				},
-				options: {
-					value: 'Illum!',
-					editable: false,
-					filtred: false,
-				}
-			})
-			// $('.select2').autoSuggest('open')
+			
+			// autoSuggest({
+			// 	elemet: '.select',
+			// 	hooks: {
+			// 		customHook: function (a, b) {}
+			// 	},
+			// 	options: {
+			// 		value: 'Illum!',
+			// 		editable: false,
+			// 		filtred: false,
+			// 	}
+			// })
+			$('.select').autoSuggest('open')
 		})
 	</script>
 </head>
