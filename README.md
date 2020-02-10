@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.3
+#### latest version 1.4.4
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.3
+* @ModuleCreator version 1.4.4
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
