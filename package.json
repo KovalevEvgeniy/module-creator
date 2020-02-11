@@ -1,6 +1,6 @@
 {
   "name": "module-creator",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Module generator by created JQuery widgets",
   "author": "KovalevEvgeniy",
   "license": "MIT & BSD",
@@ -17,6 +17,6 @@
     "gulplog": "^1.0.0"
   },
   "scripts": {
-    "watch": "gulp watch"
+    "watch": "gulp"
   }
 }

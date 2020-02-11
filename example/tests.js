@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.4
+* @ModuleCreator version 1.4.5
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -27,7 +27,7 @@ const Test = {
 		if (type === 'success') {
 			console.log('%c 🔵 ' + message + row, this.styles.succes)
 		} else if (type === 'error') {
-			console.log('%c 🔴 ' + message + row, this.styles.error)
+			console.log('ERROR %c 🔴 ' + message + row, this.styles.error)
 		} else if (type === 'life') {
 			console.log('%c ⚫️ ' + message + row, this.styles.life)
 		}
@@ -260,16 +260,25 @@ $(function () {
 				} else {
 					Test.log('Default options is not available', 'error');
 				}
+
 				if (this.options.option2) {
 					Test.log('Inctance initing options is available', 'success');
 				} else {
 					Test.log('Inctance initing options is not available', 'error');
 				}
+
+				if (this.options.optionFromData) {
+					Test.log('Options from data attributes is work', 'success');
+				} else {
+					Test.log('Options from data attributes is not work', 'error');
+				}
+
 				if (this.data.data1) {
 					Test.log('Default data is available', 'success');
 				} else {
 					Test.log('Default data is not available', 'error');
 				}
+
 				if (this.data.data2) {
 					Test.log('Inctance initing data is available', 'success');
 				} else {
@@ -384,7 +393,8 @@ $(function() {
 			data2: true
 		},
 		options: {
-			option2: true
+			option2: true,
+			optionFromData: false
 		},
 		privateMethods: {
 			_defaultMethod: function () {
@@ -403,7 +413,9 @@ $(function() {
 	console.log('------------------------------');
 	console.log('Children tests:');
 
-	exampleElement.testChild();
-	exampleElement.testChild('testExtendsChild')
+	const exampleElementChild = $('#example-child');
+
+	exampleElementChild.testChild();
+	exampleElementChild.testChild('testExtendsChild')
 });
 
