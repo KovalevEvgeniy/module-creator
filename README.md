@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.4
+#### latest version 1.4.5
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.4
+* @ModuleCreator version 1.4.5
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -208,6 +208,12 @@ this.data.propName
 this.options.optionName = 'new options'
 this.data.propName = 'new data'
 ```
+The module also accepts options from the date attribute in JSON of the same name for our module, only in the kebab-case style.
+
+```html
+    <div class="example" data-test-name='{"option-name": true}'></div>
+``` 
+
 But you can also access the `data` from the public area.
 ``` js
 this.inst.data

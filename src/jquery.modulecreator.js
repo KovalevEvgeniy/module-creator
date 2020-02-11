@@ -57,7 +57,7 @@
 						Tools.parents[parentName] = parentStruct.privateMethods;
 
 						return parentStruct;
-					})
+					});
 
 					Tools.parentMethods = Tools.extend({}, ...parentsProps).privateMethods;
 					props.parents = Tools.parents;
@@ -90,7 +90,7 @@
 							target[key] = current;
 						}
 					}
-				})
+				});
 
 				return target;
 			}
@@ -203,9 +203,23 @@
 
 			setOptions (inst) {
 				const hash = Math.round(new Date() * Math.random());
+				const dataSet = inst.el.dataset[lib];
+				let optionsFromData;
+
+				try {
+					optionsFromData = dataSet ? JSON.parse(dataSet) : {};
+				} catch (error) {
+					throw new Error('Check the data attributes in the element. ' + dataSet + ' is not valid JSON format.');
+				}
 
 				inst.hash = inst.el.hash = hash;
-				const instOptions = Tools.extend({}, (props.options || {}), (this.options.options || {}), {hash: hash});
+				const instOptions = Tools.extend(
+					{},
+					(props.options || {}),
+					(this.options.options || {}),
+					optionsFromData,
+					{hash: hash}
+				);
 
 				Object.defineProperty(inst, 'options', {
 					get: () => instOptions

@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.4 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.5 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -277,8 +277,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "setOptions",
         value: function setOptions(inst) {
           var hash = Math.round(new Date() * Math.random());
+          var dataSet = inst.el.dataset[lib];
+          var optionsFromData;
+
+          try {
+            optionsFromData = dataSet ? JSON.parse(dataSet) : {};
+          } catch (error) {
+            throw new Error('Check the data attributes in the element. ' + dataSet + ' is not valid JSON format.');
+          }
+
           inst.hash = inst.el.hash = hash;
-          var instOptions = Tools.extend({}, props.options || {}, this.options.options || {}, {
+          var instOptions = Tools.extend({}, props.options || {}, this.options.options || {}, optionsFromData, {
             hash: hash
           });
           Object.defineProperty(inst, 'options', {
