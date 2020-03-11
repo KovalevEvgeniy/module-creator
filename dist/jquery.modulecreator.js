@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.5 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.6 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -456,6 +456,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             'mouseenter': 'touchstart',
             'mousedown': 'touchstart',
             'mouseup': 'touchend',
+            'mousemove': 'touchmove',
             'mouseleave': 'touchend'
           };
         }

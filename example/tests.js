@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.5
+* @ModuleCreator version 1.4.6
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)

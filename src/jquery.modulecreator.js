@@ -347,6 +347,7 @@
 					'mouseenter': 'touchstart',
 					'mousedown': 'touchstart',
 					'mouseup': 'touchend',
+					'mousemove': 'touchmove',
 					'mouseleave': 'touchend'
 				}
 			}
