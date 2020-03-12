@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.6
+#### latest version 1.4.7
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.6
+* @ModuleCreator version 1.4.7
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -212,10 +212,22 @@ this.options.optionName = 'new options'
 this.data.propName = 'new data'
 ```
 The module also accepts options from the date attribute in JSON of the same name for our module, only in the kebab-case style.
-
-```html
-    <div class="example" data-test-name='{"option-name": true}'></div>
+``` html
+<div class="example" data-test-name='{"option-name": true}'></div>
 ``` 
+
+Options have getter method with default name `_getOption`. This method call with two arguments `options` and `key` and default return `options[key]`. Be careful with calling `this.options.optionName`, you get maximum call stack after calling it in this method.
+
+``` js
+privateMethods: {
+    // ...
+    getOption: function (options, key) {
+        // you custom code
+        return options[key];
+    }
+    // ...
+}
+```
 
 But you can also access the `data` from the public area.
 ``` js
@@ -381,6 +393,10 @@ $.CreateModule({
     },
 });
 ```
+
+### Patch Notes
+#### v 1.4.7
+Added getter for options.
 
 ### Patch Notes
 #### v 1.4.6
