@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.5
+* @ModuleCreator version 1.4.7
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -227,7 +227,7 @@ $(function () {
 			},
 			_testExtends: function () {
 				console.log('extends:');
-				if (this.options.parentOption && this.options.parentOption_2) {
+				if (this.options.parentOption === true && this.options.parentOption_2 === true) {
 					Test.log('Parent options is available', 'success');
 				} else {
 					Test.log('Parent options is not available', 'error');
@@ -255,31 +255,31 @@ $(function () {
 			},
 			_testInstanceOptions: function () {
 				console.log('instance properties:');
-				if (this.options.option1) {
+				if (this.options.option1 === true) {
 					Test.log('Default options is available', 'success');
 				} else {
 					Test.log('Default options is not available', 'error');
 				}
 
-				if (this.options.option2) {
+				if (this.options.option2 === true) {
 					Test.log('Inctance initing options is available', 'success');
 				} else {
 					Test.log('Inctance initing options is not available', 'error');
 				}
 
-				if (this.options.optionFromData) {
+				if (this.options.optionFromData === true) {
 					Test.log('Options from data attributes is work', 'success');
 				} else {
 					Test.log('Options from data attributes is not work', 'error');
 				}
 
-				if (this.data.data1) {
+				if (this.data.data1 === true) {
 					Test.log('Default data is available', 'success');
 				} else {
 					Test.log('Default data is not available', 'error');
 				}
 
-				if (this.data.data2) {
+				if (this.data.data2 === true) {
 					Test.log('Inctance initing data is available', 'success');
 				} else {
 					Test.log('Inctance initing data is not available', 'error');
@@ -320,6 +320,15 @@ $(function () {
 				} else {
 					Test.log('Method "_isMobile" is not available!', 'error');
 				}
+			},
+			_getOption: function (options, key) {
+				if (options[key] === true) {
+					Test.log('Getter option is work!', 'success');
+				} else {
+					Test.log('Getter option not work!', 'error');
+				}
+
+				return options[key]
 			}
 		},
 		publicMethods: {

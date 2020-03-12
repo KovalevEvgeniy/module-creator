@@ -171,13 +171,13 @@
 
 				this.globalReg(inst);
 
-				this.setData(inst);
-				this.setOptions(inst);
-
 				this.addHooks(inst);
 				this.addSuperMethods(inst);
 				this.addPrivateMethods(inst);
 				this.addPublicMethods(inst);
+
+				this.setData(inst);
+				this.setOptions(inst);
 			}
 
 			globalReg (inst) {
@@ -204,7 +204,7 @@
 			setOptions (inst) {
 				const hash = Math.round(new Date() * Math.random());
 				const dataSet = inst.el.dataset[lib];
-				let optionsFromData;
+				let optionsFromData = {};
 
 				try {
 					optionsFromData = dataSet ? JSON.parse(dataSet) : {};
@@ -213,13 +213,27 @@
 				}
 
 				inst.hash = inst.el.hash = hash;
-				const instOptions = Tools.extend(
+				const allOptions = Tools.extend(
 					{},
 					(props.options || {}),
 					(this.options.options || {}),
 					optionsFromData,
 					{hash: hash}
 				);
+
+				const instOptions = {};
+				for (const key in allOptions) {
+					if (allOptions.hasOwnProperty(key)) {
+						Object.defineProperty(instOptions, key, {
+							set: (value) => {
+								allOptions[key] = value;
+							},
+							get: () => {
+								return inst._getOption(allOptions, key);
+							}
+						});
+					}
+				}
 
 				Object.defineProperty(inst, 'options', {
 					get: () => instOptions
@@ -347,6 +361,7 @@
 					'mouseenter': 'touchstart',
 					'mousedown': 'touchstart',
 					'mouseup': 'touchend',
+					'mousemove': 'touchmove',
 					'mouseleave': 'touchend'
 				}
 			}
@@ -369,6 +384,10 @@
 				delete this.list[this.hash];
 				delete this.el.hash;
 				delete this.el[lib];
+			}
+
+			_getOption (options, key) {
+				return options[key];
 			}
 
 			_extend (target = {}, ...objects) {

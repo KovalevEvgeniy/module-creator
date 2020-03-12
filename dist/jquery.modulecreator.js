@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.5 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.7 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -234,12 +234,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.privateMethods = {};
         this.options = options;
         this.globalReg(inst);
-        this.setData(inst);
-        this.setOptions(inst);
         this.addHooks(inst);
         this.addSuperMethods(inst);
         this.addPrivateMethods(inst);
         this.addPublicMethods(inst);
+        this.setData(inst);
+        this.setOptions(inst);
       }
 
       _createClass(Factory, [{
@@ -278,7 +278,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function setOptions(inst) {
           var hash = Math.round(new Date() * Math.random());
           var dataSet = inst.el.dataset[lib];
-          var optionsFromData;
+          var optionsFromData = {};
 
           try {
             optionsFromData = dataSet ? JSON.parse(dataSet) : {};
@@ -287,9 +287,28 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           }
 
           inst.hash = inst.el.hash = hash;
-          var instOptions = Tools.extend({}, props.options || {}, this.options.options || {}, optionsFromData, {
+          var allOptions = Tools.extend({}, props.options || {}, this.options.options || {}, optionsFromData, {
             hash: hash
           });
+          var instOptions = {};
+
+          var _loop2 = function _loop2(key) {
+            if (allOptions.hasOwnProperty(key)) {
+              Object.defineProperty(instOptions, key, {
+                set: function set(value) {
+                  allOptions[key] = value;
+                },
+                get: function get() {
+                  return inst._getOption(allOptions, key);
+                }
+              });
+            }
+          };
+
+          for (var key in allOptions) {
+            _loop2(key);
+          }
+
           Object.defineProperty(inst, 'options', {
             get: function get() {
               return instOptions;
@@ -456,6 +475,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             'mouseenter': 'touchstart',
             'mousedown': 'touchstart',
             'mouseup': 'touchend',
+            'mousemove': 'touchmove',
             'mouseleave': 'touchend'
           };
         }
@@ -481,6 +501,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           delete this.list[this.hash];
           delete this.el.hash;
           delete this.el[lib];
+        }
+      }, {
+        key: "_getOption",
+        value: function _getOption(options, key) {
+          return options[key];
         }
       }, {
         key: "_extend",
