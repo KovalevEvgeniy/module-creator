@@ -1,6 +1,6 @@
 
 /**
- * @ModuleCreator version 1.4.7
+ * @ModuleCreator version 1.4.8
  * https://github.com/KovalevEvgeniy/module-creator
  * @module ModuleResponsive
  * Usage: extend only

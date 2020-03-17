@@ -1,4 +1,4 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.7 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.8 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
