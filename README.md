@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.7
+#### latest version 1.4.8
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.7
+* @ModuleCreator version 1.4.8
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -393,6 +393,10 @@ $.CreateModule({
     },
 });
 ```
+
+### Patch Notes
+#### v 1.4.8
+Fix bug after multi initialize.
 
 ### Patch Notes
 #### v 1.4.7
