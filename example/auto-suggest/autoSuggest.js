@@ -24,15 +24,15 @@ $(function () {
 				this._create()
 			},
 			bindEvent: function () {
-				var inst = this
-				var input = this.views.input
-				var list = this.views.list
+				var inst = this;
+				var input = this.views.input;
+				var list = this.views.list;
 
-				$(document).on(inst._getEventName('click'), inst._onClick)
-				input.on(inst._getEventName('click'), inst._onClickInput)
+				$(document).on(inst._getEventName('click'), inst._onClick);
+				input.on(inst._getEventName('click'), inst._onClickInput);
 				list.on(inst._getEventName('click'), '.js-suggest-item', function (e) {
 					inst._selectItem(e.currentTarget)
-				})
+				});
 			},
 			customHook: function () {},
 		},
@@ -77,17 +77,17 @@ $(function () {
 				return tpl
 			},
 			_onClickInput: function (e) {
-				var inst = this
-				e.stopPropagation()
-				inst._openList()
+				var inst = this;
+				e.stopPropagation();
+				inst._openList();
 			},
 			_createList: function (items) {
-				var inst = this
-				var tpl = $('<div>').addClass('js-suggest-list')
+				var inst = this;
+				var tpl = $('<div>').addClass('js-suggest-list');
 
 				items.each(function (index, item) {
-					tpl.append(inst._createItem(index, item))
-				})
+					tpl.append(inst._createItem(index, item));
+				});
 
 				return tpl
 			},
@@ -97,8 +97,8 @@ $(function () {
 				var tpl = $('<div>').addClass('js-suggest-item')
 				var description = $('<span>').appendTo(tpl).text(text)
 
-				if (inst.options.value && inst.options.value == text) {
-					tpl.addClass('active')
+				if (inst.options.value && inst.options.value === text) {
+					tpl.addClass('active');
 				}
 
 				return tpl
@@ -108,7 +108,7 @@ $(function () {
 				var list = inst.views.list
 
 				for (var key in inst.list) {
-					if (inst.hash == key) {
+					if (inst.hash === key) {
 						list.slideDown(75)
 						$(document).on(inst._getEventName('click'), inst._closeList)
 						$(document).on(inst._getEventName('keyup'), inst._onPressKey)
@@ -121,53 +121,53 @@ $(function () {
 				inst.element.trigger('open')
 			},
 			_closeList: function () {
-				var inst = this
-				var list = inst.views.list
+				var inst = this;
+				var list = inst.views.list;
 
-				list.slideUp(75)
-				inst.element.removeClass('opened')
-				$(document).off(inst._getEventName('click'))
-				$(document).off(inst._getEventName('keyup'))
+				list.slideUp(75);
+				inst.element.removeClass('opened');
+				$(document).off(inst._getEventName('click'));
+				$(document).off(inst._getEventName('keyup'));
 			},
 			_selectItem: function (el) {
-				var inst = this
-				var item = $(el)
-				var text = item.find('span').text()
+				var inst = this;
+				var item = $(el);
+				var text = item.find('span').text();
 
 				inst.views.list.find('.js-suggest-item').each(function (index, el) {
-					$(el).removeClass('active')
-				})
+					$(el).removeClass('active');
+				});
 
-				item.addClass('active')
+				item.addClass('active');
 
-				inst._setValue(text)
+				inst._setValue(text);
 			},
 			_onPressKey: function (e) {
-				var inst = this
-				var value = inst._getValue().toLowerCase()
-				var list = inst.views.list
-				var items = list.find('.js-suggest-item')
+				var inst = this;
+				var value = inst._getValue().toLowerCase();
+				var list = inst.views.list;
+				var items = list.find('.js-suggest-item');
 
-				if (e.key == 'ArrowUp') {
+				if (e.key === 'ArrowUp') {
 					if (items.hasClass('active')) {
 						inst._selectItem(list.find('.js-suggest-item.active').prev(':visible'))
 					} else {
 						inst._selectItem(list.find('.js-suggest-item:last-child:visible'))
 					}
-				} else if (e.key == 'ArrowDown') {
+				} else if (e.key === 'ArrowDown') {
 					if (items.hasClass('active')) {
 						inst._selectItem(list.find('.js-suggest-item.active').next(':visible'))
 					} else {
 						inst._selectItem(list.find('.js-suggest-item:first-child:visible'))
 					}
-				} else if (e.key == 'Enter' || e.key == 'Escape') {
+				} else if (e.key === 'Enter' || e.key === 'Escape') {
 					inst._closeList()
 				} else if (inst.options.editable) {
-					if (value.length == 0) {
+					if (value.length === 0) {
 						items.show()
 					} else {
 						items.each(function (index, el) {
-							var item = $(el)
+							var item = $(el);
 							if (item.text().toLowerCase().indexOf(value) >= 0) {
 								item.show()
 							} else {

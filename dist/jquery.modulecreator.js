@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.7 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.8 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -49,6 +49,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }, {
         key: "makeLib",
         value: function makeLib() {
+          $ = $ || {};
           $.fn = $.fn || {};
           $[lib] = $[lib] ? $[lib] : $.fn[lib] = function () {
             var selector = this;
@@ -66,8 +67,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
               var item = selector[i];
 
               if (_typeof(options) === 'object' || typeof options === 'undefined') {
-                var inst = new Module(item, options);
-                inst.list[inst.hash] = inst;
+                if (_typeof(item[lib]) !== 'object') {
+                  var inst = new Module(item, options);
+                  inst.list[inst.hash] = inst;
+                }
               } else {
                 if (item[lib][options] && typeof item[lib][options] === 'function') {
                   result = item[lib][options].apply(item[lib], args) || selector;

@@ -13,6 +13,7 @@
 			}
 
 			static makeLib () {
+				$ = $ || {};
 				$.fn = $.fn || {};
 
 				$[lib] = $[lib] ? $[lib] : ($.fn[lib] = function () {
@@ -30,8 +31,10 @@
 						let item = selector[i];
 
 						if (typeof options === 'object' || typeof options === 'undefined') {
-							const inst = new Module(item, options);
-							inst.list[inst.hash] = inst;
+							if (typeof item[lib] !== 'object') {
+								const inst = new Module(item, options);
+								inst.list[inst.hash] = inst;
+							}
 						} else {
 							if (item[lib][options] && typeof item[lib][options] === 'function') {
 								result = (item[lib][options].apply(item[lib], args) || selector);
