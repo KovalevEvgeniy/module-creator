@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.8
+#### latest version 1.4.9
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.8
+* @ModuleCreator version 1.4.9
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -393,6 +393,10 @@ $.CreateModule({
     },
 });
 ```
+
+### Patch Notes
+#### v 1.4.9
+Fix bugs in events
 
 ### Patch Notes
 #### v 1.4.8
