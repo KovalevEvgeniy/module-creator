@@ -70,27 +70,29 @@
 
 			static extend (target = {}, ...objects) {
 				objects.map(obj => {
-					for (let key in obj) {
-						const current = obj[key];
+					for (const key in obj) {
+						if (obj.hasOwnProperty(key)) {
+							const current = obj[key];
 
-						if (typeof current === 'function') {
-							target[key] = current;
-						} else if (Array.isArray(current)) {
-							target[key] = Tools.deepCopy(current);
-						} else if (typeof current === 'object') {
-							let clonedObject;
+							if (typeof current === 'function') {
+								target[key] = current;
+							} else if (Array.isArray(current)) {
+								target[key] = Tools.deepCopy(current);
+							} else if (typeof current === 'object') {
+								let clonedObject;
 
-							if (Array.isArray(target[key])) {
-								clonedObject = Tools.extend({}, current);
-							} else if (typeof target[key] === 'object') {
-								clonedObject = Tools.extend(target[key], current);
+								if (Array.isArray(target[key])) {
+									clonedObject = Tools.extend({}, current);
+								} else if (typeof target[key] === 'object') {
+									clonedObject = Tools.extend(target[key], current);
+								} else {
+									clonedObject = Tools.extend({}, current);
+								}
+
+								target[key] = clonedObject;
 							} else {
-								clonedObject = Tools.extend({}, current);
+								target[key] = current;
 							}
-
-							target[key] = clonedObject;
-						} else {
-							target[key] = current;
 						}
 					}
 				});
@@ -107,7 +109,9 @@
 					const clonedObject = Tools.extend({}, target);
 
 					for (let key in clonedObject) {
-						clonedObject[key] = Tools.deepCopy(clonedObject[key]);
+						if (clonedObject.hasOwnProperty(key)) {
+							clonedObject[key] = Tools.deepCopy(clonedObject[key]);
+						}
 					}
 
 					return clonedObject;
@@ -118,7 +122,7 @@
 
 			static haveFunctions (object) {
 				for (let key in object) {
-					if (typeof object[key] !== 'function') {
+					if (object.hasOwnProperty(key) && typeof object[key] !== 'function') {
 						throw new Error('The "' + key + '" element must be a function');
 					}
 				}
@@ -139,7 +143,9 @@
 				const inst = this;
 
 				for (let name in data) {
-					this.set(name, data[name], inst.watch[name]);
+					if (data.hasOwnProperty(name)) {
+						this.set(name, data[name], inst.watch[name]);
+					}
 				}
 
 				Object.defineProperty(this.inst, 'data', {
@@ -149,7 +155,6 @@
 
 			set (name, value, callback = function () {}) {
 				const inst = this;
-				const data = inst.inst.data;
 
 				Object.defineProperty(this.instData, name, {
 					get: () => {
@@ -266,10 +271,12 @@
 					Tools.haveFunctions(props.privateMethods);
 
 					for (let key in props.privateMethods) {
-						if (key[0] !== '_') {
-							throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
+						if (props.privateMethods.hasOwnProperty(key)) {
+							if (key[0] !== '_') {
+								throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
+							}
+							inst[key] = this.privateMethods[key] = props.privateMethods[key].bind(inst);
 						}
-						inst[key] = this.privateMethods[key] = props.privateMethods[key].bind(inst);
 					}
 				}
 			}
@@ -285,24 +292,26 @@
 					Tools.haveFunctions(props.publicMethods);
 
 					for (let key in props.publicMethods) {
-						const publicContext = {};
-						Object.defineProperty(publicContext, 'inst', {
-							get: () => inst.el[lib]
-						});
-						Object.defineProperty(publicContext, 'private', {
-							get: () => this.privateMethods,
-							set (val) {
-								throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+						if (props.publicMethods.hasOwnProperty(key)) {
+							const publicContext = {};
+							Object.defineProperty(publicContext, 'inst', {
+								get: () => inst.el[lib]
+							});
+							Object.defineProperty(publicContext, 'private', {
+								get: () => this.privateMethods,
+								set (val) {
+									throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+								}
+							});
+
+							inst.el[lib][key] = props.publicMethods[key].bind(publicContext);
+
+							if (inst[key]) {
+								throw new Error('The ' + key + ' method is already defined in a private scope!');
 							}
-						});
-
-						inst.el[lib][key] = props.publicMethods[key].bind(publicContext);
-
-						if (inst[key]) {
-							throw new Error('The ' + key + ' method is already defined in a private scope!');
-						}
-						if (key[0] === '_') {
-							throw new Error('The public method should not start with "_". Rename the method ' + key);
+							if (key[0] === '_') {
+								throw new Error('The public method should not start with "_". Rename the method ' + key);
+							}
 						}
 					}
 				}
@@ -360,7 +369,7 @@
 
 			_getEventList () {
 				return {
-					'click': 'touchstart',
+					'click': 'touchend',
 					'mouseenter': 'touchstart',
 					'mousedown': 'touchstart',
 					'mouseup': 'touchend',

@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.8 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.9 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -112,26 +112,28 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           objects.map(function (obj) {
             for (var key in obj) {
-              var current = obj[key];
+              if (obj.hasOwnProperty(key)) {
+                var current = obj[key];
 
-              if (typeof current === 'function') {
-                target[key] = current;
-              } else if (Array.isArray(current)) {
-                target[key] = Tools.deepCopy(current);
-              } else if (_typeof(current) === 'object') {
-                var clonedObject = void 0;
+                if (typeof current === 'function') {
+                  target[key] = current;
+                } else if (Array.isArray(current)) {
+                  target[key] = Tools.deepCopy(current);
+                } else if (_typeof(current) === 'object') {
+                  var clonedObject = void 0;
 
-                if (Array.isArray(target[key])) {
-                  clonedObject = Tools.extend({}, current);
-                } else if (_typeof(target[key]) === 'object') {
-                  clonedObject = Tools.extend(target[key], current);
+                  if (Array.isArray(target[key])) {
+                    clonedObject = Tools.extend({}, current);
+                  } else if (_typeof(target[key]) === 'object') {
+                    clonedObject = Tools.extend(target[key], current);
+                  } else {
+                    clonedObject = Tools.extend({}, current);
+                  }
+
+                  target[key] = clonedObject;
                 } else {
-                  clonedObject = Tools.extend({}, current);
+                  target[key] = current;
                 }
-
-                target[key] = clonedObject;
-              } else {
-                target[key] = current;
               }
             }
           });
@@ -150,7 +152,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             var clonedObject = Tools.extend({}, target);
 
             for (var key in clonedObject) {
-              clonedObject[key] = Tools.deepCopy(clonedObject[key]);
+              if (clonedObject.hasOwnProperty(key)) {
+                clonedObject[key] = Tools.deepCopy(clonedObject[key]);
+              }
             }
 
             return clonedObject;
@@ -162,7 +166,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "haveFunctions",
         value: function haveFunctions(object) {
           for (var key in object) {
-            if (typeof object[key] !== 'function') {
+            if (object.hasOwnProperty(key) && typeof object[key] !== 'function') {
               throw new Error('The "' + key + '" element must be a function');
             }
           }
@@ -194,7 +198,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var inst = this;
 
           for (var _name in data) {
-            this.set(_name, data[_name], inst.watch[_name]);
+            if (data.hasOwnProperty(_name)) {
+              this.set(_name, data[_name], inst.watch[_name]);
+            }
           }
 
           Object.defineProperty(this.inst, 'data', {
@@ -208,7 +214,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function set(name, value) {
           var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
           var inst = this;
-          var data = inst.inst.data;
           Object.defineProperty(this.instData, name, {
             get: function get() {
               return inst.data[name];
@@ -350,11 +355,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             Tools.haveFunctions(props.privateMethods);
 
             for (var key in props.privateMethods) {
-              if (key[0] !== '_') {
-                throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
-              }
+              if (props.privateMethods.hasOwnProperty(key)) {
+                if (key[0] !== '_') {
+                  throw new Error('The name of the private method must begin with "_". Rename the method ' + key);
+                }
 
-              inst[key] = this.privateMethods[key] = props.privateMethods[key].bind(inst);
+                inst[key] = this.privateMethods[key] = props.privateMethods[key].bind(inst);
+              }
             }
           }
         }
@@ -377,28 +384,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             Tools.haveFunctions(props.publicMethods);
 
             for (var key in props.publicMethods) {
-              var publicContext = {};
-              Object.defineProperty(publicContext, 'inst', {
-                get: function get() {
-                  return inst.el[lib];
-                }
-              });
-              Object.defineProperty(publicContext, 'private', {
-                get: function get() {
-                  return _this2.privateMethods;
-                },
-                set: function set(val) {
-                  throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
-                }
-              });
-              inst.el[lib][key] = props.publicMethods[key].bind(publicContext);
+              if (props.publicMethods.hasOwnProperty(key)) {
+                var publicContext = {};
+                Object.defineProperty(publicContext, 'inst', {
+                  get: function get() {
+                    return inst.el[lib];
+                  }
+                });
+                Object.defineProperty(publicContext, 'private', {
+                  get: function get() {
+                    return _this2.privateMethods;
+                  },
+                  set: function set(val) {
+                    throw new Error('Setting the value to "' + val + '" failed. Object "private" is not editable');
+                  }
+                });
+                inst.el[lib][key] = props.publicMethods[key].bind(publicContext);
 
-              if (inst[key]) {
-                throw new Error('The ' + key + ' method is already defined in a private scope!');
-              }
+                if (inst[key]) {
+                  throw new Error('The ' + key + ' method is already defined in a private scope!');
+                }
 
-              if (key[0] === '_') {
-                throw new Error('The public method should not start with "_". Rename the method ' + key);
+                if (key[0] === '_') {
+                  throw new Error('The public method should not start with "_". Rename the method ' + key);
+                }
               }
             }
           }
@@ -474,7 +483,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "_getEventList",
         value: function _getEventList() {
           return {
-            'click': 'touchstart',
+            'click': 'touchend',
             'mouseenter': 'touchstart',
             'mousedown': 'touchstart',
             'mouseup': 'touchend',

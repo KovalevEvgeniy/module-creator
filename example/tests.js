@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.8
+* @ModuleCreator version 1.4.9
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -426,5 +426,7 @@ $(function() {
 
 	exampleElementChild.testChild();
 	exampleElementChild.testChild('testExtendsChild')
+
+
 });
 
