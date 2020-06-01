@@ -1,6 +1,6 @@
 {
   "name": "module-creator",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "Module generator by created JQuery widgets",
   "author": "KovalevEvgeniy",
   "license": "MIT & BSD",
@@ -11,6 +11,7 @@
     "babel-core": "^6.26.3",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^1.4.0",
     "gulp-uglify": "^3.0.1",

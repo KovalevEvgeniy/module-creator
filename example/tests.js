@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.9
+* @ModuleCreator version 1.4.10
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -273,6 +273,18 @@ $(function () {
 					Test.log('Options from data attributes is not work', 'error');
 				}
 
+				if (this.options.dataoption1 === true) {
+					Test.log('Options from single data attribute is work', 'success');
+				} else {
+					Test.log('Options from single data attribute is not work', 'error');
+				}
+
+				if (this.options.dataoption2 === true) {
+					Test.log('Options from single data attribute is replace', 'success');
+				} else {
+					Test.log('Options from single data attribute is not replace', 'error');
+				}
+
 				if (this.data.data1 === true) {
 					Test.log('Default data is available', 'success');
 				} else {
@@ -403,7 +415,8 @@ $(function() {
 		},
 		options: {
 			option2: true,
-			optionFromData: false
+			optionFromData: false,
+			dataoption2: false
 		},
 		privateMethods: {
 			_defaultMethod: function () {
