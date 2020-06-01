@@ -4,12 +4,11 @@ const plumber = require('gulp-plumber');
 const concat = require("gulp-concat");
 const minify = require('gulp-uglify');
 const rename = require('gulp-rename');
-const mocha = require('gulp-mocha');
-const log = require('gulplog');
 const description = 'src/description.js'
 
 const tmp = function (done) {
 	return gulp.src('src/jquery.modulecreator.js')
+		.pipe(plumber())
 		.pipe(babel({
 			presets: ['@babel/env']
 		}))
@@ -23,10 +22,12 @@ const tmp = function (done) {
 
 const dist = function (done) {
 	gulp.src([description, 'tmp/jquery.modulecreator.js'])
+		.pipe(plumber())
 		.pipe(concat('jquery.modulecreator.js'))
 		.pipe(gulp.dest('dist'));
 
 	gulp.src([description, 'tmp/jquery.modulecreator.min.js'])
+		.pipe(plumber())
 		.pipe(concat('jquery.modulecreator.min.js'))
 		.pipe(gulp.dest('dist'));
 

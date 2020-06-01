@@ -11,11 +11,21 @@ $.CreateModule({
 	name: 'ModuleResponsive',
 	options: {
 		mobileFirst: false,
+		breakpoints: [320, 760, 960, 1280, 1680],
+		currentBreakpoint: 0,
 		responsive: {
 			// '760': {},
 			// '960': {},
 			// '1280': {},
 			// '1680': {}
+		}
+	},
+	hooks: {
+		create() {
+			$(window).on(this._getEventName('resize'), this._onChangeBreakpoint);
+		},
+		changeBreakpoint(newBreakpoint, oldBreakpoint) {
+			$(document).trigger('changebreakpoint', [newBreakpoint, oldBreakpoint]);
 		}
 	},
 	privateMethods: {
@@ -44,6 +54,22 @@ $.CreateModule({
 				return value;
 			} else {
 				return options[key];
+			}
+		},
+		_onChangeBreakpoint (event) {
+			const currentWidth = $(window).width();
+			const oldBreakpoint = this.options.currentBreakpoint;
+			let currentBreakpoint = Infinity;
+
+			this.options.breakpoints.sort((a, b) => a - b).map(breakpoint => {
+				if (currentWidth > breakpoint) {
+					currentBreakpoint = breakpoint;
+				}
+			});
+
+			if (currentBreakpoint !== oldBreakpoint) {
+				this.options.currentBreakpoint = currentBreakpoint;
+				this.hook('changeBreakpoint', currentBreakpoint, oldBreakpoint);
 			}
 		}
 	},

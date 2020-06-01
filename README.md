@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.9
+#### latest version 1.4.10
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.9
+* @ModuleCreator version 1.4.10
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -213,8 +213,12 @@ this.data.propName = 'new data'
 ```
 The module also accepts options from the date attribute in JSON of the same name for our module, only in the kebab-case style.
 ``` html
-<div class="example" data-test-name='{"option-name": true}'></div>
-``` 
+<div class="example" data-test-name='{"optionName": true}'></div>
+```
+or
+``` html
+<div class="example" data-test-name-option-name='true'></div>
+```  
 
 Options have getter method with default name `_getOption`. This method call with two arguments `options` and `key` and default return `options[key]`. Be careful with calling `this.options.optionName`, you get maximum call stack after calling it in this method.
 
@@ -392,6 +396,14 @@ $.CreateModule({
         }
     },
 });
+```
+
+### Patch Notes
+#### v 1.4.10
+Parse single option from data attribute. Must be valid JSON.
+```
+    data-module-name-optionname1='true' // optionname1: true
+    data-module-name-option-name2='1000' // optionName2: 1000
 ```
 
 ### Patch Notes

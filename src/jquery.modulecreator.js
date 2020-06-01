@@ -8,7 +8,7 @@
 				Tools.makeLib();
 			}
 
-			static getLibName (name) {
+			static getCamelCase (name) {
 				return name.substr(0,1).toLowerCase() + name.substr(1);
 			}
 
@@ -55,7 +55,7 @@
 					Tools.parents = {};
 					Tools.parent = {};
 					const parentsProps = props.extends.map(parentName => {
-						parentName = Tools.getLibName(parentName);
+						parentName = Tools.getCamelCase(parentName);
 						const parentStruct = $[parentName].struct;
 						Tools.parents[parentName] = parentStruct.privateMethods;
 
@@ -211,8 +211,24 @@
 
 			setOptions (inst) {
 				const hash = Math.round(new Date() * Math.random());
-				const dataSet = inst.el.dataset[lib];
+				const allDataSet = inst.el.dataset;
+				const dataSet = allDataSet[lib];
 				let optionsFromData = {};
+				let optionsFromSingleData = {};
+
+				if (Object.keys(allDataSet).length > 0) {
+					for (const key in allDataSet) {
+						if (key !== lib && key.indexOf(lib) === 0 && allDataSet.hasOwnProperty(key)) {
+							const optionName = Tools.getCamelCase(key.split(lib)[1]);
+
+							try {
+								optionsFromSingleData[optionName] =  JSON.parse(allDataSet[key]);
+							} catch (error) {
+								throw new Error('Check the data attribute ' + key + ' in the element. ' + allDataSet[key] + ' is not valid JSON format.');
+							}
+						}
+					}
+				}
 
 				try {
 					optionsFromData = dataSet ? JSON.parse(dataSet) : {};
@@ -226,6 +242,7 @@
 					(props.options || {}),
 					(this.options.options || {}),
 					optionsFromData,
+					optionsFromSingleData,
 					{hash: hash}
 				);
 
@@ -336,7 +353,7 @@
 		}
 
 		const name = props.name;
-		const lib = Tools.getLibName(name);
+		const lib = Tools.getCamelCase(name);
 		const list = {};
 		const storage = {};
 		let watchingData;

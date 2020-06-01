@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.9 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.10 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -42,8 +42,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           Tools.makeLib();
         }
       }, {
-        key: "getLibName",
-        value: function getLibName(name) {
+        key: "getCamelCase",
+        value: function getCamelCase(name) {
           return name.substr(0, 1).toLowerCase() + name.substr(1);
         }
       }, {
@@ -91,7 +91,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             Tools.parents = {};
             Tools.parent = {};
             var parentsProps = props.extends.map(function (parentName) {
-              parentName = Tools.getLibName(parentName);
+              parentName = Tools.getCamelCase(parentName);
               var parentStruct = $[parentName].struct;
               Tools.parents[parentName] = parentStruct.privateMethods;
               return parentStruct;
@@ -285,8 +285,24 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "setOptions",
         value: function setOptions(inst) {
           var hash = Math.round(new Date() * Math.random());
-          var dataSet = inst.el.dataset[lib];
+          var allDataSet = inst.el.dataset;
+          var dataSet = allDataSet[lib];
           var optionsFromData = {};
+          var optionsFromSingleData = {};
+
+          if (Object.keys(allDataSet).length > 0) {
+            for (var key in allDataSet) {
+              if (key !== lib && key.indexOf(lib) === 0 && allDataSet.hasOwnProperty(key)) {
+                var optionName = Tools.getCamelCase(key.split(lib)[1]);
+
+                try {
+                  optionsFromSingleData[optionName] = JSON.parse(allDataSet[key]);
+                } catch (error) {
+                  throw new Error('Check the data attribute ' + key + ' in the element. ' + allDataSet[key] + ' is not valid JSON format.');
+                }
+              }
+            }
+          }
 
           try {
             optionsFromData = dataSet ? JSON.parse(dataSet) : {};
@@ -295,26 +311,26 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           }
 
           inst.hash = inst.el.hash = hash;
-          var allOptions = Tools.extend({}, props.options || {}, this.options.options || {}, optionsFromData, {
+          var allOptions = Tools.extend({}, props.options || {}, this.options.options || {}, optionsFromData, optionsFromSingleData, {
             hash: hash
           });
           var instOptions = {};
 
-          var _loop2 = function _loop2(key) {
-            if (allOptions.hasOwnProperty(key)) {
-              Object.defineProperty(instOptions, key, {
+          var _loop2 = function _loop2(_key2) {
+            if (allOptions.hasOwnProperty(_key2)) {
+              Object.defineProperty(instOptions, _key2, {
                 set: function set(value) {
-                  allOptions[key] = value;
+                  allOptions[_key2] = value;
                 },
                 get: function get() {
-                  return inst._getOption(allOptions, key);
+                  return inst._getOption(allOptions, _key2);
                 }
               });
             }
           };
 
-          for (var key in allOptions) {
-            _loop2(key);
+          for (var _key2 in allOptions) {
+            _loop2(_key2);
           }
 
           Object.defineProperty(inst, 'options', {
@@ -339,8 +355,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   throw new Error('Hook "' + name + '" is not defined in the module');
                 }
 
-                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                  args[_key2 - 1] = arguments[_key2];
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key3 = 1; _key3 < _len2; _key3++) {
+                  args[_key3 - 1] = arguments[_key3];
                 }
 
                 return hooks[name].apply(inst, args);
@@ -420,8 +436,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             get: function get() {
               return function (name, argument) {
                 try {
-                  for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-                    args[_key3 - 2] = arguments[_key3];
+                  for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key4 = 2; _key4 < _len3; _key4++) {
+                    args[_key4 - 2] = arguments[_key4];
                   }
 
                   if (props.parents && _typeof(props.parents[name]) === 'object' && props.parents[name][argument]) {
@@ -442,7 +458,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }();
 
     var name = props.name;
-    var lib = Tools.getLibName(name);
+    var lib = Tools.getCamelCase(name);
     var list = {};
     var storage = {};
     var watchingData;
@@ -524,8 +540,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         value: function _extend() {
           var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-          for (var _len4 = arguments.length, objects = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-            objects[_key4 - 1] = arguments[_key4];
+          for (var _len4 = arguments.length, objects = new Array(_len4 > 1 ? _len4 - 1 : 0), _key5 = 1; _key5 < _len4; _key5++) {
+            objects[_key5 - 1] = arguments[_key5];
           }
 
           return Tools.extend.apply(Tools, [target].concat(objects));
