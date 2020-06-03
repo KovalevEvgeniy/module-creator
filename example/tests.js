@@ -285,6 +285,12 @@ $(function () {
 					Test.log('Options from single data attribute is not replace', 'error');
 				}
 
+				if (this.options.dataoption3 === true) {
+					Test.log('Options from single data attribute can read without value', 'success');
+				} else {
+					Test.log('Options from single data attribut cant read without value', 'error');
+				}
+
 				if (this.data.data1 === true) {
 					Test.log('Default data is available', 'success');
 				} else {
