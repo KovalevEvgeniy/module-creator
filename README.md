@@ -219,6 +219,7 @@ or
 ``` html
 <div class="example" data-test-name-option-name='true'></div>
 ```  
+If value no valid JSON, data use how string.
 
 Options have getter method with default name `_getOption`. This method call with two arguments `options` and `key` and default return `options[key]`. Be careful with calling `this.options.optionName`, you get maximum call stack after calling it in this method.
 
