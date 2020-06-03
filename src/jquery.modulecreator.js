@@ -222,7 +222,7 @@
 							const optionName = Tools.getCamelCase(key.split(lib)[1]);
 
 							try {
-								optionsFromSingleData[optionName] =  JSON.parse(allDataSet[key]);
+								optionsFromSingleData[optionName] =  allDataSet[key] === '' ? true : JSON.parse(allDataSet[key]);
 							} catch (error) {
 								throw new Error('Check the data attribute ' + key + ' in the element. ' + allDataSet[key] + ' is not valid JSON format.');
 							}

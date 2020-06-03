@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.10 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.11 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -296,7 +296,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                 var optionName = Tools.getCamelCase(key.split(lib)[1]);
 
                 try {
-                  optionsFromSingleData[optionName] = JSON.parse(allDataSet[key]);
+                  optionsFromSingleData[optionName] = allDataSet[key] === '' ? true : JSON.parse(allDataSet[key]);
                 } catch (error) {
                   throw new Error('Check the data attribute ' + key + ' in the element. ' + allDataSet[key] + ' is not valid JSON format.');
                 }

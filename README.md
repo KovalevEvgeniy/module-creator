@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.10
+#### latest version 1.4.11
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.10
+* @ModuleCreator version 1.4.11
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -225,7 +225,7 @@ Options have getter method with default name `_getOption`. This method call with
 ``` js
 privateMethods: {
     // ...
-    getOption: function (options, key) {
+    _getOption: function (options, key) {
         // you custom code
         return options[key];
     }
@@ -396,6 +396,14 @@ $.CreateModule({
         }
     },
 });
+```
+### Patch Notes
+#### v 1.4.11
+Hot fix bugs with single data options without value. All variants return `true`.
+```
+    data-module-name-optionname1
+    data-module-name-optionname1=''
+    data-module-name-optionname1='true'
 ```
 
 ### Patch Notes
