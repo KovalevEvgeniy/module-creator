@@ -224,7 +224,7 @@
 							try {
 								optionsFromSingleData[optionName] =  allDataSet[key] === '' ? true : JSON.parse(allDataSet[key]);
 							} catch (error) {
-								throw new Error('Check the data attribute ' + key + ' in the element. ' + allDataSet[key] + ' is not valid JSON format.');
+								optionsFromSingleData[optionName] = allDataSet[key];
 							}
 						}
 					}
