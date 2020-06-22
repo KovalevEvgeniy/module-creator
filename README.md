@@ -28,16 +28,16 @@ $.CreateModule({
     name: 'Name',
     options: {},
     hooks: {
-        create: function () {
+        create() {
             this._create();
         },
-        bindEvent: function () {
+        bindEvent() {
             $(this.element).on(this._getEventName('click'), this._exampleHandler);
         }
     },
     privateMethods: {
-        _create: function () {},
-        _exampleHandler (event) {}
+        _create() {},
+        _exampleHandler(event) {}
     },
     publicMethods: {}
 });
@@ -51,36 +51,36 @@ $.CreateModule({
     data: {},
     options: {},
     hooks: {
-        beforeCreate: function () {},
-        create: function () {
+        beforeCreate() {},
+        create() {
             // this - a link to a private instance
             this._create();
         },
-        bindEvent: function () {
+        bindEvent() {
             $(this.element).on(this._getEventName('click'), this._exampleHandler);
         },
-        afterCreate: function () {}
+        afterCreate() {}
     },
     privateMethods: {
-        _create: function () {
+        _create() {
             // this - a link to a private instance
         },
-        _unBindEvent: function () {
+        _unBindEvent() {
             $(this.element).off(this.hash);
         },
-        _exampleHandler: function (event) {
+        _exampleHandler(event) {
             // this - is stilla link to a private instance
         },
-        _examplePrivateMethod: function (arg1, arg2) {
+        _examplePrivateMethod(arg1, arg2) {
             // code...
         }
     },
     publicMethods: {
-        destroy: function () {
+        destroy() {
             this.private._unBindEvent();
             this.private._destroy();
         },
-        examplePublicMethod: function (arg1, arg2) {
+        examplePublicMethod(arg1, arg2) {
             // this - a link to the public instance
             // this.inst - a link to a private instance from a public area
             // this.private - a link to a private methods from the public area
@@ -92,14 +92,14 @@ $.CreateModule({
 ```
 #### Initializing the module
 ``` js
-$(function () {
+$(() => {
     $(selector).name([options]);
 });
 ```
 Or, if you do not need to process the elements.
 
 ``` js
-$(function () {
+$(() => {
     $.name([options]);
 });
 ```
@@ -186,7 +186,7 @@ But you can override it or extend the returned object.
 ``` js
 privateMethods: {
     // ...
-    _getEventList: function () {
+    _getEventList() {
         return $.extend({}, this.super('_getEventList'), {
             'myEvent': 'myMobileEvent'
         })
@@ -226,7 +226,7 @@ Options have getter method with default name `_getOption`. This method call with
 ``` js
 privateMethods: {
     // ...
-    _getOption: function (options, key) {
+    _getOption(options, key) {
         // you custom code
         return options[key];
     }
@@ -242,7 +242,7 @@ And you can add methods to the `watch` object. They should be named as `data` pr
 ``` js
 watch: {
     // ...
-    propName: function (oldValue, newValue) {
+    propName(oldValue, newValue) {
         // this method will be called after the change `data.propName`
         // and you get the old and new values in the arguments
     }
@@ -275,21 +275,21 @@ In addition to standard hooks, you can add your own. But they will also have to 
 You can add them when generating the module.
 ``` js
 hooks: {
-    beforeCreate: function () {/* code... */},
-    create: function () {/* code... */},
-    bindEvent: function () {/* code... */},
-    afterCreate: function () {/* code... */},
-    customHook: function (arg1, arg2) {
+    beforeCreate() {/* code... */},
+    create() {/* code... */},
+    bindEvent() {/* code... */},
+    afterCreate() {/* code... */},
+    customHook(arg1, arg2) {
         // code
     }
 },
 ```
 Or creating an instance.
 ``` js
-$(function () {
+$(() => {
     $(select).moduleName({
         hooks: {
-            customHook: function (arg1, arg2) {
+            customHook(arg1, arg2) {
                 // code
             }
         }
@@ -316,10 +316,10 @@ $.CreateModule({
         secondOption: true
     },
     privateMethods: {
-        _create: function () {
+        _create() {
             console.log('this is parent method');
         },
-        _testMethod: function () {
+        _testMethod() {
             console.log('this method not be called');
             return 'called parent method'
         }
@@ -336,12 +336,12 @@ $.CreateModule({
         secondOption: false
     },
     hooks: {
-        create: function () {
+        create() {
             this._create()
         }
     },
     privateMethods: {
-        _testMethod: function () {
+        _testMethod() {
             console.log('this method to be called');
             console.log(this.options); // {parentOption: true, childrenOption: true, secondOption: false}
             this.super('_testMethod') // 'called parent method'
@@ -366,7 +366,7 @@ $.CreateModule({
     name: 'ParentModule',
     // code
     privateMethods: {
-        _create: function (isReturn) {
+        _create(isReturn) {
             if (isReturn) {
                 return 'first parent method';
             }
@@ -378,7 +378,7 @@ $.CreateModule({
     name: 'ParentModule2',
     // code
     privateMethods: {
-        _create: function () {
+        _create() {
             return 'second parent method';
         }
     },
@@ -389,7 +389,7 @@ $.CreateModule({
     extends: ['parentModule', 'parentModule2'],
     // code
     privateMethods: {
-        _create: function () {
+        _create() {
             this.super('_create') // 'second parent method'
 
             this.super('parentModule', '_create', true) // 'first parent method'
