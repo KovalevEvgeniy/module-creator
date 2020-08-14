@@ -1,6 +1,6 @@
 'use strict';
 /**
-* @ModuleCreator version 1.4.10
+* @ModuleCreator version 1.4.12
 * @module TestName
 * @plugin testName
 * @example $.testName(object) || $('#example').testName(object)
@@ -108,6 +108,15 @@ $(function () {
 				} else {
 					Test.log('The observing data method does not work correctly', 'error');
 				}
+			},
+			newWatchingDataWithWatch: function (oldValue, newValue) {
+				window.newWatchingDataWithWatch = true;
+
+				if (oldValue === 'old' && newValue === 'new') {
+					Test.log('The observing new data method works correctly', 'success');
+				} else {
+					Test.log('The observing new data method does not work correctly', 'error');
+				}
 			}
 		},
 		options: {
@@ -202,6 +211,12 @@ $(function () {
 
 				if (window.watchingData !== true) {
 					Test.log('Data is not watching', 'error');
+				}
+
+				this._set('newWatchingDataWithWatch', 'old');
+				this.data.newWatchingDataWithWatch = 'new';
+				if (window.newWatchingDataWithWatch !== true) {
+					Test.log('New data is not watching', 'error');
 				}
 
 				this._set('newWatchingData', 'old', function (oldValue, newValue) {
