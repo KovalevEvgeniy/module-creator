@@ -153,7 +153,7 @@
 				});
 			}
 
-			set (name, value, callback = function () {}) {
+			set (name, value, callback) {
 				const inst = this;
 
 				Object.defineProperty(this.instData, name, {
@@ -163,6 +163,8 @@
 					set (newValue) {
 						if (callback && typeof callback === 'function') {
 							callback(inst.data[name], newValue);
+						} else if (inst.watch[name] && typeof inst.watch[name] === 'function') {
+							inst.watch[name](inst.data[name], newValue);
 						}
 						inst.data[name] = newValue;
 					}

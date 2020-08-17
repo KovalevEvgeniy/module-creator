@@ -1,5 +1,5 @@
 # ModuleCreator
-#### latest version 1.4.11
+#### latest version 1.4.12
 
 ## Usage
 
@@ -16,7 +16,7 @@
 // Start creating the module by copying this code:
 
 /**
-* @ModuleCreator version 1.4.11
+* @ModuleCreator version 1.4.12
 * https://github.com/KovalevEvgeniy/module-creator
 * @module ModuleName
 * @example $.moduleName(object)
@@ -106,6 +106,7 @@ $(() => {
 
 
 ## Documentation
+
 ### Methods
 You can call public methods on an instance from an element
 ``` js
@@ -264,6 +265,8 @@ this._set('propsName', 'propsValue', function (oldValue, newValue) {
 
 
 ### Storage
+After initialise each instance add to `this.list`.
+
 Storage is also very similar to the options. The only difference is that different instances of the same class have access to the same storage.
 ``` js
 this.storage // object
@@ -399,6 +402,10 @@ $.CreateModule({
 });
 ```
 ### Patch Notes
+#### v 1.4.12
+Fix watching setters after use method `_set`.
+
+### Patch Notes
 #### v 1.4.11
 Hot fix bugs with single data options without value. All variants return `true`.
 ```
@@ -450,7 +457,7 @@ Add method `this._isMobile()`
 return boolean.
 
 ### Patch Notes
-#### v 1.4.1
+#### v 1.4.2
 Fix bugs
 
 ### Patch Notes

@@ -1,5 +1,5 @@
 /*
- * CreateModule (jquery.modulecreator.js) 1.4.11 | MIT & BSD
+ * CreateModule (jquery.modulecreator.js) 1.4.12 | MIT & BSD
  * https://github.com/KovalevEvgeniy/module-creator
  */
 
@@ -211,8 +211,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
       }, {
         key: "set",
-        value: function set(name, value) {
-          var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+        value: function set(name, value, callback) {
           var inst = this;
           Object.defineProperty(this.instData, name, {
             get: function get() {
@@ -221,6 +220,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             set: function set(newValue) {
               if (callback && typeof callback === 'function') {
                 callback(inst.data[name], newValue);
+              } else if (inst.watch[name] && typeof inst.watch[name] === 'function') {
+                inst.watch[name](inst.data[name], newValue);
               }
 
               inst.data[name] = newValue;
