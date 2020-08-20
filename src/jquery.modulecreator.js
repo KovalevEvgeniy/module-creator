@@ -161,12 +161,15 @@
 						return inst.data[name];
 					},
 					set (newValue) {
-						if (callback && typeof callback === 'function') {
-							callback.call(inst.inst, inst.data[name], newValue);
-						} else if (inst.watch[name] && typeof inst.watch[name] === 'function') {
-							inst.watch[name].call(inst.inst, inst.data[name], newValue);
-						}
+						const oldValue = inst.data[name];
+
 						inst.data[name] = newValue;
+
+						if (callback && typeof callback === 'function') {
+							callback.call(inst.inst, oldValue, inst.data[name]);
+						} else if (inst.watch[name] && typeof inst.watch[name] === 'function') {
+							inst.watch[name].call(inst.inst, oldValue, inst.data[name]);
+						}
 					}
 				});
 
