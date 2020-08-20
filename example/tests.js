@@ -10,7 +10,8 @@
 const Test = {
 	styles: {
 		succes: 'color: #25a3ec',
-		error: 'color: #d62020',
+		error: 'color: #' +
+			'',
 		life: 'color: #777'
 	},
 	getRow: function () {
