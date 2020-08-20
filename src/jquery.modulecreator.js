@@ -162,9 +162,9 @@
 					},
 					set (newValue) {
 						if (callback && typeof callback === 'function') {
-							callback(inst.data[name], newValue);
+							callback.call(inst.inst, inst.data[name], newValue);
 						} else if (inst.watch[name] && typeof inst.watch[name] === 'function') {
-							inst.watch[name](inst.data[name], newValue);
+							inst.watch[name].call(inst.inst, inst.data[name], newValue);
 						}
 						inst.data[name] = newValue;
 					}
